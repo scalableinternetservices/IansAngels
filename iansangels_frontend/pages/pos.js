@@ -74,7 +74,7 @@ const getOrders = () => {
 }
 
 
-export default function Home() {
+export default function Pos() {
   var orders_json = getOrders();
 
   const editETA = (i) => {
@@ -91,8 +91,9 @@ export default function Home() {
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link href="/">Home</Nav.Link>
-              <Nav.Link href="/">Sales Report</Nav.Link>
-              <Nav.Link href="/">Inventory</Nav.Link>
+              <Nav.Link href="/salesreport">Sales Report</Nav.Link>
+              <Nav.Link href="/inventory">Inventory</Nav.Link>
+              <Nav.Link href="/menus">View/Edit Menus</Nav.Link>
               <Nav.Link href="/client">Client</Nav.Link>
               <Nav.Link href="/kitchen">Kitchen</Nav.Link>
             </Nav>
@@ -134,19 +135,6 @@ export default function Home() {
               </tbody>
           </table>
       </div>
-      <br/>
-      <div className="m-5">
-        <h2>Menu</h2>
-      </div>
-      <br/>
-      <div className="m-5">
-        <h2>Inventory</h2>
-      </div>
-      <br/>
-      <div className="m-5">
-        <h2>Sales Report</h2>
-      </div>
-      <br/>
     </div>
   )
 }

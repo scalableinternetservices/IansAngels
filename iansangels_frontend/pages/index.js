@@ -30,30 +30,30 @@ export default function Home() {
         </Container>
       </Navbar>
       <div style={{backgroundImage: `url(${bg_image.src})`, backgroundRepeat:"no-repeat", backgroundSize:"contain", height:1000, width:"auto", overflow:"auto"}}>
-      <div className="m-5">
-        <h1 className="text-center">Welcome to Ian's Angels All-In-One Restaurant WebApp</h1>
-      </div>
-      <div className="m-5">
-        <Container>
-          <Row>
-            <Col className="text-center">
-              <Link href="/client">
-                <Button variant="primary">Client Page</Button>
-              </Link>
-            </Col>
-            <Col className="text-center">
-              <Link href="/pos">
-                <Button variant="primary">POS Page</Button>
-              </Link>
-            </Col>
-            <Col className="text-center">
-              <Link href="/kitchen">
-                <Button variant="primary">Kitchen Page</Button>
-              </Link>
-            </Col>
-          </Row>
-        </Container>
-      </div>
+        <div className="m-5">
+          <h1 className="text-center">Welcome to Ian's Angels All-In-One Restaurant WebApp</h1>
+        </div>
+        <div className="m-5">
+          <Container>
+            <Row>
+              <Col className="text-center">
+                <Link href="/client">
+                  <Button variant="primary">Client Page</Button>
+                </Link>
+              </Col>
+              <Col className="text-center">
+                <Link href="/pos">
+                  <Button variant="primary">POS Page</Button>
+                </Link>
+              </Col>
+              <Col className="text-center">
+                <Link href="/kitchen">
+                  <Button variant="primary">Kitchen Page</Button>
+                </Link>
+              </Col>
+            </Row>
+          </Container>
+        </div>
       </div>
     </div>
   )
