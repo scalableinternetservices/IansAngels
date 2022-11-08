@@ -10,20 +10,45 @@ class OrdersController < ApplicationController
     end
 
     def create
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        personData = Person.find_by(username: params[:username])
+
+        order = Order.new(order_params)
+        order.person = personData
+
+        if order.save
+            render json: OrderSerializer.new(order).serialized_json
+        else
+            raise ActionController::RoutingError.new('Not Found'), status: 404
+        end
     end
 
     def update
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        personData = Person.find_by(username: params[:username])
+
+        order = Order.find_by(person_id: personData.id)
+
+        if order.update(order_params)
+            render json: OrderSerializer.new(order).serialized_json
+        else
+            raise ActionController::RoutingError.new('Not Found'), status: 404
+        end
     end
 
     def destroy
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        personData = Person.find_by(username: params[:username])
+
+        order = Order.find_by(person_id: personData.id)
+
+        if order.destroy
+            head :no_content
+        else
+            raise ActionController::RoutingError.new('Not Found'), status: 404
+        end
     end
 
     private
 
     def order_params
-        params.require(:order).permit(:ETA, :itemNames, :person_id)
+        params.require(:order).permit(:ETA, :person_id, :itemNames => [])
     end
 end
