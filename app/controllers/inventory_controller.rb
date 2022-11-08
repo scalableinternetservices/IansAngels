@@ -14,7 +14,7 @@ class InventoryController < ApplicationController
     end
 
     def show
-        inventory = Inventory.find(params[:id])
+        inventory = Inventory.find_by(id: params[:id])
         render json: InventorySerializer.new(inventory).serialized_json
     end
 

@@ -6,7 +6,7 @@ class OrdersController < ApplicationController
     end
 
     def show
-        order = Order.find(params[:id])
+        order = Order.find_by(id: params[:id])
         render json: OrderSerializer.new(order).serialized_json
     end
 
