@@ -3,4 +3,4 @@
 
 cd /var/app/current/iansangels_frontend
 sudo npm install
-sudo npm run dev -p 5000
+sudo npm run dev
