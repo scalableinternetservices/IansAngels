@@ -103,6 +103,7 @@ export default function Kitchen() {
             </tbody>
           </table>
         </div>
+
       </div>
 
       <Modal show={show} onHide={handleClose} animation={false}>

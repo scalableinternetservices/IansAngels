@@ -185,7 +185,7 @@ function App() {
         padding: 70px 0;
       `}
     >
-      {/* <Navbar2 bg="light" expand="lg">
+       {/* <Navbar bg="light" expand="lg">
         <Container>
           <Navbar.Brand href="/">Ian's Angels All-In-One Restaurant WebApp</Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -199,7 +199,7 @@ function App() {
             </Nav>
           </Navbar.Collapse>
         </Container>
-      </Navbar2> */}
+      </Navbar> */}
 
       <Navbar
         setAll={setAll}

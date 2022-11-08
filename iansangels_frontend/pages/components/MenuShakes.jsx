@@ -21,7 +21,7 @@ const MenuShakes = ({ shakes, items }) => {
               variants={itemContainer}
               transition={{ delay: i * 0.2 }}
             >
-              <img src={imgShakesMenu} alt="food burger" />
+              <img src={item.imageSrc} alt="food burger" />
               <motion.div className="item-content">
                 <motion.div className="item-title-box">
                   <motion.h5 className="item-title">{item.title}</motion.h5>

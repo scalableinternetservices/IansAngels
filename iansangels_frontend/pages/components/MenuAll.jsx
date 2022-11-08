@@ -1,5 +1,7 @@
 import { motion } from "framer-motion";
 import imgAllMenu from "../img/undraw_barbecue.svg";
+// import imgAllMenu from "/food_bg.jpg";
+
 const MenuAll = ({ all, items }) => {
   const itemContainer = {
     hidden: { y: 20, opacity: 0 },
@@ -19,7 +21,7 @@ const MenuAll = ({ all, items }) => {
             variants={itemContainer}
             transition={{ delay: i * 0.2 }}
           >
-            <img src={imgAllMenu} alt="food burger" />
+            <img src={item.imageSrc} alt="food burger" />
             <motion.div className="item-content">
               <motion.div className="item-title-box">
                 <motion.h5 className="item-title">{item.title}</motion.h5>
