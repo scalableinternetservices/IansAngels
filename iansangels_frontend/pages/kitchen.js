@@ -7,6 +7,8 @@ import Link from "next/link";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+import Nav from "react-bootstrap/Nav";
+import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -63,6 +65,21 @@ export default function Kitchen() {
   return (
     <>
       <div>
+        <Navbar bg="light" expand="lg">
+          <Container>
+            <Navbar.Brand href="/">
+              Ian's Angels All-In-One Restaurant WebApp
+            </Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav" />
+            <Navbar.Collapse id="basic-navbar-nav">
+              <Nav className="me-auto">
+                <Nav.Link href="/">Home</Nav.Link>
+                <Nav.Link href="/client">Client</Nav.Link>
+                <Nav.Link href="/kitchen">Kitchen</Nav.Link>
+              </Nav>
+            </Navbar.Collapse>
+          </Container>
+        </Navbar>
         <div className="m-5">
           <h1 className="text-center">Kitchen</h1>
         </div>
