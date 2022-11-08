@@ -14,7 +14,8 @@ class InventoryController < ApplicationController
     end
 
     def show
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        inventory = Inventory.find(params[:id])
+        render json: InventorySerializer.new(inventory).serialized_json
     end
 
     def create

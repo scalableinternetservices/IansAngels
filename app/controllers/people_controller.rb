@@ -6,7 +6,8 @@ class PersonController < ApplicationController
     end
 
     def show
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        people = Person.find(params[:id])
+        render json: PersonSerializer.new(people).serialized_json
     end
 
     def create

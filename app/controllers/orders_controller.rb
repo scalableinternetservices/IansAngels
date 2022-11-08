@@ -6,7 +6,8 @@ class OrdersController < ApplicationController
     end
 
     def show
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        order = Order.find(params[:id])
+        render json: OrderSerializer.new(order).serialized_json
     end
 
     def create

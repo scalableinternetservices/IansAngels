@@ -6,7 +6,8 @@ class MenuController < ApplicationController
     end
 
     def show
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        menu = Menu.find(params[:id])
+        render json: MenuSerializer.new(menu).serialized_json
     end
 
     def create

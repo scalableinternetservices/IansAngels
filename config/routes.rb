@@ -7,6 +7,14 @@ Rails.application.routes.draw do
   get 'POS/menu', to: 'menu#index'
   get 'POS/orders', to: 'orders#index'
 
+
+  # show
+  get 'kitchen/:id', to: 'orders#show'
+  get 'client/:id', to: 'menu#show'
+  get 'POS/inventory/:id', to: 'inventory#show'
+  get 'POS/menu/:id', to: 'menu#show'
+  get 'POS/orders/:id', to: 'orders#show'
+
   #all post requests tested by insomnia seem to work
   post 'kitchen', to: 'orders#create'
   post 'client', to: 'menu#create'
