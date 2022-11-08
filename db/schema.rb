@@ -25,6 +25,9 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_205010) do
     t.boolean "canOrder"
     t.float "price"
     t.string "itemName"
+    t.string "description"
+    t.string "category"
+    t.string "imageURL"
     t.string "ingredients", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
