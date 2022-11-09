@@ -11,6 +11,11 @@ class MenuController < ApplicationController
     end
 
     def create
+        if Menu.find_by(itemName: params[:itemName]) != nil
+            print "this menu item already exists in the database, update its value instead"
+            return
+        end
+
         menu = Menu.new(menu_params)
 
         if menu.save

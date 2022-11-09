@@ -13,6 +13,11 @@ class OrdersController < ApplicationController
     def create
         personData = Person.find_by(username: params[:username])
 
+        if personData == nil
+            print "no user exists under this username, please create an account or try a different username"
+            return
+        end
+
         order = Order.new(order_params)
         order.person = personData
 

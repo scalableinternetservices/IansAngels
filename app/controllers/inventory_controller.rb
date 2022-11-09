@@ -19,6 +19,11 @@ class InventoryController < ApplicationController
     end
 
     def create
+        if Inventory.find_by(foodName: params[:foodName]) != nil
+            print "this inventory item already exists in the database, update its value instead"
+            return
+        end
+
         inventory = Inventory.new(inventory_params)
 
         if inventory.save
