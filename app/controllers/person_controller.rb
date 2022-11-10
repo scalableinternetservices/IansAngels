@@ -1,12 +1,12 @@
 class PersonController < ApplicationController
     def index
         people = Person.all
-
         render json: PersonSerializer.new(people).serialized_json
     end
 
     def show
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        person = Person.find_by(id: params[:id])
+        render json: PersonSerializer.new(person).serialized_json
     end
 
     def create
@@ -23,7 +23,7 @@ class PersonController < ApplicationController
 
     private
 
-    def people_params
+    def person_params
         params.require(:person).permit(:username, :password, :email, :position)
     end
 end

@@ -6,11 +6,17 @@ class OrdersController < ApplicationController
     end
 
     def show
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        order = Order.find_by(id: params[:id])
+        render json: OrderSerializer.new(order).serialized_json
     end
 
     def create
         personData = Person.find_by(username: params[:username])
+
+        if personData == nil
+            print "no user exists under this username, please create an account or try a different username"
+            return
+        end
 
         order = Order.new(order_params)
         order.person = personData

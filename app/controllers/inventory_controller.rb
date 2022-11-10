@@ -14,10 +14,16 @@ class InventoryController < ApplicationController
     end
 
     def show
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        inventory = Inventory.find_by(id: params[:id])
+        render json: InventorySerializer.new(inventory).serialized_json
     end
 
     def create
+        if Inventory.find_by(foodName: params[:foodName]) != nil
+            print "this inventory item already exists in the database, update its value instead"
+            return
+        end
+
         inventory = Inventory.new(inventory_params)
 
         if inventory.save

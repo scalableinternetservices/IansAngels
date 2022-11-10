@@ -6,10 +6,16 @@ class MenuController < ApplicationController
     end
 
     def show
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        menu = Menu.find_by(id: params[:id])
+        render json: MenuSerializer.new(menu).serialized_json
     end
 
     def create
+        if Menu.find_by(itemName: params[:itemName]) != nil
+            print "this menu item already exists in the database, update its value instead"
+            return
+        end
+
         menu = Menu.new(menu_params)
 
         if menu.save
