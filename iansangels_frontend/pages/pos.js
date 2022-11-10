@@ -57,6 +57,103 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 */
 
 
+/*
+//useEffect runs when any object given in the array at the end re-renders, when array is empty it runs on initial page render. Here we grab initial data
+useEffect(() => {
+        var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+        var endpoint = "/posts";
+        fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+            .then(response => 
+                response.json().then(data => {
+                    setPosts_json(data["data"])
+                    setLoading(false);
+            }))
+    }, [])
+
+    const submitPost = () => { //hook function up to a button or whatever
+        console.log("submit post");
+        console.log("uid: " + newUserId);
+        console.log("pid: " + newPostId);
+        console.log("ptxt: " + newPostText);
+        console.log("purl: " + newPostURL);
+
+        if(newUserId == "" || newPostId == ""){
+            window.alert("Missing Ids");
+            return;
+        }
+
+        const opts = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ //object to be posted
+                "user_id": newUserId, //newUserId,etc are state objects made with useState() that we set to be the value we want push to db
+                "idpost": newPostId,
+                "text": newPostText,
+                "imageurl": newPostURL,
+            })
+        };
+
+        var rails_url = "http://localhost:3001";
+        var endpoint = "/posts";
+        fetch(rails_url+endpoint, opts) //give it options to do post/patch/delete requests
+            .then(response => {
+                window.location.reload();
+            })
+
+    }
+
+    const deletePost = (i) => {
+        console.log("delete " + i);
+
+        const opts = {
+            method: 'DELETE',
+        };
+
+        var rails_url = "http://localhost:3001";
+        var endpoint = "/posts/"+i;          //talk with erwan for the endpoint here, needs to refer to the specific entry in db to delete
+        fetch(rails_url+endpoint, opts)
+            .then(response => {
+                window.location.reload();
+            })
+    }
+*/
+
+/*
+const handleCloseSubmit = () => {
+        console.log("submit edit");
+        console.log("uid: " + newUserId);
+        console.log("pid: " + newPostId);
+        console.log("ptxt: " + newPostText);
+        console.log("purl: " + newPostURL);
+
+        if(newUserId == "" || newPostId == ""){
+            window.alert("Missing Ids");
+            return;
+        }
+        
+        setShowModal(false);
+
+        const opts = {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                "user_id": newUserId,
+                "idpost": newPostId,
+                "text": newPostText,
+                "imageurl": newPostURL,
+            })
+        };
+
+        var rails_url = "http://localhost:3001";
+        var endpoint = "/posts/"+posts_json[editNum]["attributes"]["idpost"]; //talk with erwan for the endpoint here, needs to refer to the specific entry in db to update
+        fetch(rails_url+endpoint, opts)
+            .then(response => {
+                window.location.reload();
+            })
+    }
+*/
+
+
 const getOrders = () => {
     var orders_json = [
         {
