@@ -47,6 +47,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_205010) do
     t.string "password"
     t.string "email"
     t.string "position"
+    t.string "completedOrders", default: [], array: true
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end

@@ -5,6 +5,7 @@ class CreatePeople < ActiveRecord::Migration[7.0]
       t.string :password
       t.string :email
       t.string :position
+      t.string :completedOrders, array: true, default: [[]]
 
       t.timestamps
     end
