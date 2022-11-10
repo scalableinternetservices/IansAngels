@@ -74,3 +74,35 @@ const menuData = [
 ];
 
 export default menuData;
+
+
+// import { useState, useEffect } from 'react'
+// // import * as ReactDOM from 'react-dom'
+// import Link from 'next/link';
+
+
+
+
+// export const menuData = () =>{
+
+//   const [menuData_json, setMenuData] = useState([]);
+
+//   useEffect(() => {
+//     var rails_url = "http://localhost:3000";
+//     var endpoint = "/client";
+//     fetch(rails_url+endpoint)
+//         .then(response => 
+//             response.json().then(data => {
+//               setMenuData(data["data"])
+//               setLoading(false);
+//         }))
+//   }, [])
+
+
+
+
+//   console.log(menuData_json);
+
+//   return JSON.parse(menuData_json)
+
+// }

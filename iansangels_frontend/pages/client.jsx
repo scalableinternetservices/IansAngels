@@ -159,22 +159,114 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { css, jsx, Global } from "@emotion/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-import MenuItems from "./Components/MenuItems";
-import MenuData from "./Components/MenuData";
-import Navbar from "./Components/Navbar";
+import MenuItems from "./components/Menu/MenuItems";
+import MenuData from "./components/Menu/MenuData";
+// import {menuData} from "./components/MenuData";
+import Navbar from "./components/Menu/Navbar";
 
 import Nav from 'react-bootstrap/Nav';
 import Navbar2 from 'react-bootstrap/Navbar';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
+import styles from './client.module.css';
+
 function App() {
   const [all, setAll] = useState(true);
   const [breakfast, setBreakfast] = useState(false);
   const [lunch, setLunch] = useState(false);
   const [shakes, setShakes] = useState(false);
+
+  
+  const [cart, setCart] = useState([]);
+  const [cartAmount, setCartAmount] = useState(0);
+  const [cartDisplayed, setCartDisplayed] = useState(false);
+  const [overlap, setOverlap] = useState(false);
+
+
+  const handleAddToCart = (e) => {
+    let handledAddedGame = allGames.map((game, i) => {
+      if (location.pathname === "/react-ecommerce-store/browse") {
+        if (e.target.id == i) {
+          game.inCart = true
+          let newCart = cart;
+          newCart.push(game);
+          setCart(newCart);
+          setCartAmount(cartAmount + 1);
+          return game
+        } else {
+          return game;
+        }
+      } else {
+          if (selectedGame.id == i) {
+            game.inCart = true
+            let newCart = cart;
+            newCart.push(game);
+            setCart(newCart);
+            setCartAmount(cartAmount + 1);
+            return game
+          } else {
+            return game;
+          }
+      }
+    });
+  
+    setAllGames(handledAddedGame);
+  }
+  
+  const clearCart = () => {
+    setCart([]);
+    setCartAmount(0);
+    const defaultGames = allGames.map((game, i) => {
+      game.inCart = false;
+      game.isHovered = false;
+      return game;
+    });
+    setAllGames(defaultGames);
+    let newHoverState = hoverState[21];
+    newHoverState.hovered = false;
+    setHoverState([
+      ...hoverState, hoverState[21] = newHoverState
+    ]);
+  }
+  
+  const handleRemoveFromCart = (e) => {
+    let removedIndex = cart.findIndex(game => game.id == e.target.id);
+    let newAllGames = allGames.map((game, i) => {
+      if (game.id == e.target.id) {
+        game.inCart = false;
+        game.isHovered = false;
+        return game;
+      } else {
+        return game;
+      }
+    });
+    setAllGames(newAllGames);
+    let firstHalf = cart.slice(0, removedIndex);
+    let secondHalf = cart.slice(removedIndex + 1);
+    let addedUp = firstHalf.concat(secondHalf);
+    setCart(addedUp);
+    setCartAmount(cartAmount - 1)
+    setHoverState([...hoverState, hoverState[21].hovered = false]);
+  }
+
+  const handleOpenCart = () => {
+    setCartDisplayed(true);
+  }
+  
+  const handleCloseCart = () => {
+    setCartDisplayed(false);
+  }
+  
+  useEffect(() => {
+    if (cartDisplayed) {
+      document.body.style.overflow = "hidden !important";   
+    } else {
+      document.body.style.overflow = "scroll !important";
+    }
+  }, [cartDisplayed])
 
   return (
     <div
@@ -185,21 +277,6 @@ function App() {
         padding: 70px 0;
       `}
     >
-       {/* <Navbar bg="light" expand="lg">
-        <Container>
-          <Navbar.Brand href="/">Ian's Angels All-In-One Restaurant WebApp</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav" />
-            <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
-              <Nav.Link href="/">Home</Nav.Link>
-              <Nav.Link href="/">Sales Report</Nav.Link>
-              <Nav.Link href="/">Inventory</Nav.Link>
-              <Nav.Link href="/client">Client</Nav.Link>
-              <Nav.Link href="/kitchen">Kitchen</Nav.Link>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar> */}
 
       <Navbar
         setAll={setAll}
@@ -215,6 +292,29 @@ function App() {
         lunch={lunch}
         shakes={shakes}
       />
+
+      <div className={styles.main}>
+        {overlap ? 
+            <motion.div 
+              className={styles.overlap}
+              variants={buttonVariants}
+              initial="hidden"
+              animate="visible"
+            >
+      
+            </motion.div> 
+        : null}
+
+        {cartDisplayed ? <Cart 
+                cartDisplayed={cartDisplayed} 
+                handleOpenCart={handleOpenCart}
+                handleCloseCart={handleCloseCart}
+                cart={cart}
+                cartAmount={cartAmount}
+                clearCart={clearCart}
+                handleRemoveFromCart={handleRemoveFromCart}
+        /> : null}
+      </div>
 
       <Global
         styles={css`

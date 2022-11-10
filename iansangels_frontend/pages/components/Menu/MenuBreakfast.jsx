@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
-import imgShakesMenu from "../img/undraw_refreshing.svg";
 
-const MenuShakes = ({ shakes, items }) => {
+const MenuBreakfast = ({ breakfast, items }) => {
   const itemContainer = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -9,11 +8,12 @@ const MenuShakes = ({ shakes, items }) => {
       opacity: 1,
     },
   };
+
   return (
     <>
-      {shakes &&
+      {breakfast &&
         items
-          .filter((item) => item.category === "shakes")
+          .filter((item) => item.category === "breakfast")
           .map((item, i) => (
             <motion.div
               className="menu-items"
@@ -35,4 +35,4 @@ const MenuShakes = ({ shakes, items }) => {
   );
 };
 
-export default MenuShakes;
+export default MenuBreakfast;

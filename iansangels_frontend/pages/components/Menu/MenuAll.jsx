@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import imgAllMenu from "../img/undraw_barbecue.svg";
 // import imgAllMenu from "/food_bg.jpg";
 
 const MenuAll = ({ all, items }) => {
@@ -36,3 +35,4 @@ const MenuAll = ({ all, items }) => {
 };
 
 export default MenuAll;
+
