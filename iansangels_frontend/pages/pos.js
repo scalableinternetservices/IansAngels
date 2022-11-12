@@ -154,7 +154,7 @@ const handleCloseSubmit = () => {
 */
 
 
-const getOrders = () => {
+/*const getOrders = () => {
     var orders_json = [
         {
           "iduser": 1,
@@ -168,16 +168,37 @@ const getOrders = () => {
         }
     ];
     return orders_json;
-}
+}*/
 
 
 export default function Pos() {
-  var orders_json = getOrders();
+
+    const [orders_json, setOrders_json] = useState([]);
+
+    useEffect(() => {
+        var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+        var endpoint = "/POS/orders";
+        fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+            .then(response => 
+                response.json().then(data => {
+                    setOrders_json(data["data"])
+                    setLoading(false);
+            }))
+    }, [])
+
+  
+  //var orders_json = getOrders();
+
+  const [loading, setLoading] = useState(true);
 
   const editETA = (i) => {
       console.log("edit eta " + i);
   }
 
+
+  if(loading){
+    return <h1>Loading</h1>
+  }
 
   return (
     <div>
