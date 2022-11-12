@@ -1,7 +1,7 @@
 class PersonController < ApplicationController
     def index
         people = Person.all
-        render json: PersonSerializer.new(people).serialized_json
+        render json: PersonSerializer.new(people, options).serialized_json
     end
 
     def show
@@ -9,7 +9,7 @@ class PersonController < ApplicationController
         menu = Menu.all
 
         #can add options to serializer parameters to let a user see his current order as well
-        personJSON = PersonSerializer.new(person).serialized_json
+        personJSON = PersonSerializer.new(person, options).serialized_json
         menuJSON = MenuSerializer.new(menu).serialized_json
 
         render json: personJSON + "\n\n" + menuJSON
@@ -33,7 +33,7 @@ class PersonController < ApplicationController
         params.require(:person).permit(:username, :password, :email, :position, :completedOrders => [[]])
     end
 
-    # def options
-    #     @options ||= {include: %i[orders]}
-    # end
+    def options
+        @options ||= {include: %i[orders]}
+    end
 end
