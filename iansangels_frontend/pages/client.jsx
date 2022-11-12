@@ -39,8 +39,6 @@
 //   }),
 // }));
 
-
-
 // export default function Home() {
 //   const [expanded, setExpanded] = React.useState(false);
 
@@ -69,7 +67,7 @@
 //       <div className="m-5">
 //         <h1 className="text-center">Ordering Page</h1>
 //       </div>
-      
+
 //       <Card sx={{ maxWidth: 345 }}>
 //       <CardHeader
 //         avatar={
@@ -145,33 +143,29 @@
 //         </CardContent>
 //       </Collapse>
 //     </Card>
-      
-
 
 //     </div>
-    
+
 //   )
 // }
-
-
-
 
 /** @jsxRuntime classic */
 /** @jsx jsx */
 import { css, jsx, Global } from "@emotion/react";
 import { useState, useEffect } from "react";
-
 import MenuItems from "./components/Menu/MenuItems";
 import MenuData from "./components/Menu/MenuData";
 // import {menuData} from "./components/MenuData";
 import Navbar from "./components/Menu/Navbar";
 
-import Nav from 'react-bootstrap/Nav';
-import Navbar2 from 'react-bootstrap/Navbar';
-import Button from 'react-bootstrap/Button';
-import Container from 'react-bootstrap/Container';
+import Nav from "react-bootstrap/Nav";
+import Navbar2 from "react-bootstrap/Navbar";
+import Button from "react-bootstrap/Button";
+import Container from "react-bootstrap/Container";
 
-import styles from './client.module.css';
+import { slide as Menu } from "react-burger-menu";
+
+import styles from "./client.module.css";
 
 function App() {
   const [all, setAll] = useState(true);
@@ -179,43 +173,41 @@ function App() {
   const [lunch, setLunch] = useState(false);
   const [shakes, setShakes] = useState(false);
 
-  
   const [cart, setCart] = useState([]);
   const [cartAmount, setCartAmount] = useState(0);
   const [cartDisplayed, setCartDisplayed] = useState(false);
   const [overlap, setOverlap] = useState(false);
 
-
   const handleAddToCart = (e) => {
     let handledAddedGame = allGames.map((game, i) => {
       if (location.pathname === "/react-ecommerce-store/browse") {
         if (e.target.id == i) {
-          game.inCart = true
+          game.inCart = true;
           let newCart = cart;
           newCart.push(game);
           setCart(newCart);
           setCartAmount(cartAmount + 1);
-          return game
+          return game;
         } else {
           return game;
         }
       } else {
-          if (selectedGame.id == i) {
-            game.inCart = true
-            let newCart = cart;
-            newCart.push(game);
-            setCart(newCart);
-            setCartAmount(cartAmount + 1);
-            return game
-          } else {
-            return game;
-          }
+        if (selectedGame.id == i) {
+          game.inCart = true;
+          let newCart = cart;
+          newCart.push(game);
+          setCart(newCart);
+          setCartAmount(cartAmount + 1);
+          return game;
+        } else {
+          return game;
+        }
       }
     });
-  
+
     setAllGames(handledAddedGame);
-  }
-  
+  };
+
   const clearCart = () => {
     setCart([]);
     setCartAmount(0);
@@ -227,13 +219,11 @@ function App() {
     setAllGames(defaultGames);
     let newHoverState = hoverState[21];
     newHoverState.hovered = false;
-    setHoverState([
-      ...hoverState, hoverState[21] = newHoverState
-    ]);
-  }
-  
+    setHoverState([...hoverState, (hoverState[21] = newHoverState)]);
+  };
+
   const handleRemoveFromCart = (e) => {
-    let removedIndex = cart.findIndex(game => game.id == e.target.id);
+    let removedIndex = cart.findIndex((game) => game.id == e.target.id);
     let newAllGames = allGames.map((game, i) => {
       if (game.id == e.target.id) {
         game.inCart = false;
@@ -248,72 +238,127 @@ function App() {
     let secondHalf = cart.slice(removedIndex + 1);
     let addedUp = firstHalf.concat(secondHalf);
     setCart(addedUp);
-    setCartAmount(cartAmount - 1)
-    setHoverState([...hoverState, hoverState[21].hovered = false]);
-  }
+    setCartAmount(cartAmount - 1);
+    setHoverState([...hoverState, (hoverState[21].hovered = false)]);
+  };
 
   const handleOpenCart = () => {
     setCartDisplayed(true);
-  }
-  
+  };
+
   const handleCloseCart = () => {
     setCartDisplayed(false);
-  }
-  
+  };
+
+  const styles = {
+    bmBurgerButton: {
+      position: "fixed",
+      width: "36px",
+      height: "30px",
+      right: "36px",
+      top: "72px",
+    },
+    bmBurgerBars: {
+      background: "#373a47",
+    },
+    bmBurgerBarsHover: {
+      background: "#a90000",
+    },
+    bmCrossButton: {
+      height: "24px",
+      width: "24px",
+    },
+    bmCross: {
+      background: "#bdc3c7",
+    },
+    bmMenuWrap: {
+      position: "fixed",
+      height: "100%",
+    },
+    bmMenu: {
+      background: "#373a47",
+      padding: "2.5em 1.5em 0",
+      fontSize: "1.15em",
+    },
+    bmMorphShape: {
+      fill: "#373a47",
+    },
+    bmItemList: {
+      color: "#b8b7ad",
+      padding: "0.8em",
+    },
+    bmItem: {
+      display: "inline-block",
+    },
+    bmOverlay: {
+      background: "rgba(0, 0, 0, 0.3)",
+    },
+  };
+
   useEffect(() => {
     if (cartDisplayed) {
-      document.body.style.overflow = "hidden !important";   
+      document.body.style.overflow = "hidden !important";
     } else {
       document.body.style.overflow = "scroll !important";
     }
-  }, [cartDisplayed])
+  }, [cartDisplayed]);
 
   return (
     <div
+      id={"outer-container"}
       className="App"
       css={css`
         background: #f0eff1;
         height: 100%;
-        padding: 70px 0;
       `}
     >
+      <Menu
+        styles={styles}
+        right
+        pageWrapId={"page-wrap"}
+        outerContainerId={"outer-container"}
+        customBurgerIcon={<img src="/static/img/cart.jpeg" />}
+      >
+        <h3>Cart</h3>
+      </Menu>
+      <div id={"page-wrap"}>
+        <Navbar
+          setAll={setAll}
+          setBreakfast={setBreakfast}
+          setLunch={setLunch}
+          setShakes={setShakes}
+        />
 
-      <Navbar
-        setAll={setAll}
-        setBreakfast={setBreakfast}
-        setLunch={setLunch}
-        setShakes={setShakes}
-      />
+        <MenuItems
+          items={MenuData}
+          all={all}
+          breakfast={breakfast}
+          lunch={lunch}
+          shakes={shakes}
+        />
 
-      <MenuItems
-        items={MenuData}
-        all={all}
-        breakfast={breakfast}
-        lunch={lunch}
-        shakes={shakes}
-      />
-
-      <div className={styles.main}>
-        {overlap ? 
-            <motion.div 
+        <div className={styles.main}>
+          {overlap ? (
+            <motion.div
               className={styles.overlap}
               variants={buttonVariants}
               initial="hidden"
               animate="visible"
-            >
-      
-            </motion.div> 
-        : null}
+            ></motion.div>
+          ) : null}
 
-        {cartDisplayed ? <Cart 
-                cartDisplayed={cartDisplayed} 
-                handleOpenCart={handleOpenCart}
-                handleCloseCart={handleCloseCart}
-                cart={cart}
-                cartAmount={cartAmount}
-                clearCart={clearCart}
-                handleRemoveFromCart={handleRemoveFromCart}
-        /> : null}
+          {cartDisplayed ? (
+            <Cart
+              cartDisplayed={cartDisplayed}
+              handleOpenCart={handleOpenCart}
+              handleCloseCart={handleCloseCart}
+              cart={cart}
+              cartAmount={cartAmount}
+              clearCart={clearCart}
+              handleRemoveFromCart={handleRemoveFromCart}
+            />
+          ) : null}
+        </div>
       </div>
 
       <Global

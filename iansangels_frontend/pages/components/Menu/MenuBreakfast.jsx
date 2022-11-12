@@ -28,6 +28,14 @@ const MenuBreakfast = ({ breakfast, items }) => {
                   <motion.h5 className="item-price">${item.price}</motion.h5>
                 </motion.div>
                 <motion.p className="item-desc">{item.desc}</motion.p>
+                <motion.div>
+                  <a
+                    onClick={() => console.log(item.title)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Add to cart -&gt;
+                  </a>
+                </motion.div>
               </motion.div>
             </motion.div>
           ))}

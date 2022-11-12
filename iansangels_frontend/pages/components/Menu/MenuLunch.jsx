@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 
 // import dish1 from "../../public/img/dish1.jpg";
 
-// import bg_image from "../../public/food_bg.jpg"; 
+// import bg_image from "../../public/food_bg.jpg";
 
 const MenuLunch = ({ lunch, items }) => {
   const itemContainer = {
@@ -33,7 +33,7 @@ const MenuLunch = ({ lunch, items }) => {
               <img src={item.imageSrc} alt="food burger" />
 
               {/* <img src={require(item.image)} alt="s burger" /> */}
-              
+
               {/* {dish1} */}
 
               {/* <imgLunchMenu/> */}
@@ -43,6 +43,14 @@ const MenuLunch = ({ lunch, items }) => {
                   <motion.h5 className="item-price">${item.price}</motion.h5>
                 </motion.div>
                 <motion.p className="item-desc">{item.desc}</motion.p>
+                <motion.div>
+                  <a
+                    onClick={() => console.log(item.title)}
+                    style={{ cursor: "pointer" }}
+                  >
+                    Add to cart -&gt;
+                  </a>
+                </motion.div>
               </motion.div>
             </motion.div>
           ))}

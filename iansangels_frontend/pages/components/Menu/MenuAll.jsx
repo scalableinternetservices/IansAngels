@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import Cart from "../ShoppingCart/Cart/Cart";
 // import imgAllMenu from "/food_bg.jpg";
 
 const MenuAll = ({ all, items }) => {
@@ -27,6 +28,14 @@ const MenuAll = ({ all, items }) => {
                 <motion.h5 className="item-price">${item.price}</motion.h5>
               </motion.div>
               <motion.p className="item-desc">{item.desc}</motion.p>
+              <motion.div>
+                <a
+                  onClick={() => console.log(item.title)}
+                  style={{ cursor: "pointer" }}
+                >
+                  Add to cart -&gt;
+                </a>
+              </motion.div>
             </motion.div>
           </motion.div>
         ))}
@@ -35,4 +44,3 @@ const MenuAll = ({ all, items }) => {
 };
 
 export default MenuAll;
-
