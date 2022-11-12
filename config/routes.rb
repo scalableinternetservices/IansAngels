@@ -1,12 +1,17 @@
 Rails.application.routes.draw do
   root 'root#index'
 
+  #will not be needing all those routes but may be necessary to add more in the future
+
   get 'kitchen', to: 'orders#index'
   get 'client', to: 'menu#index'
   get 'POS/inventory', to: 'inventory#index'
   get 'POS/menu', to: 'menu#index'
   get 'POS/orders', to: 'orders#index'
   get 'person', to: 'person#index'
+
+  #will now display the menu and only the specific user's orders and completed orders
+  get 'person/:id', to: 'person#show'
 
   # show
   get 'kitchen/:id', to: 'orders#show'
