@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
@@ -199,6 +200,9 @@ export default function Pos() {
   if(loading){
     return <h1>Loading</h1>
   }
+  else{
+    console.log(orders_json);
+  }
 
   return (
     <div>
@@ -230,7 +234,7 @@ export default function Pos() {
               <thead>
                   <tr>
                       <th className="text-center"></th>
-                      <th className="text-center">Client User ID</th>
+                      <th className="text-center">Client Username</th>
                       <th className="text-center">Order</th>
                       <th className="text-center">ETA</th>
                       <th className="text-center">Update ETA</th>
@@ -241,9 +245,9 @@ export default function Pos() {
                       return (
                           <tr>
                               <td scope="row">{i+1}</td>
-                              <td width="10%">{order["iduser"]}</td>
-                              <td width="10%">{order["order"]}</td>
-                              <td className="text-center" width="25%">{order["eta"]}</td>
+                              <td width="10%">{order["attributes"]["person"]["username"]}</td>
+                              <td width="10%">{order["attributes"]["itemNames"][0]}</td>
+                              <td className="text-center" width="25%"></td>
                               <td className="text-center" width="10%">
                                   <Button variant="secondary" onClick={(e) => {editETA(i)}}>Edit ETA</Button>
                               </td>
