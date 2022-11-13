@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
@@ -154,7 +155,7 @@ const handleCloseSubmit = () => {
 */
 
 
-const getOrders = () => {
+/*const getOrders = () => {
     var orders_json = [
         {
           "iduser": 1,
@@ -168,16 +169,40 @@ const getOrders = () => {
         }
     ];
     return orders_json;
-}
+}*/
 
 
 export default function Pos() {
-  var orders_json = getOrders();
+
+    const [orders_json, setOrders_json] = useState([]);
+
+    useEffect(() => {
+        var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+        var endpoint = "/POS/orders";
+        fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+            .then(response => 
+                response.json().then(data => {
+                    setOrders_json(data["data"])
+                    setLoading(false);
+            }))
+    }, [])
+
+  
+  //var orders_json = getOrders();
+
+  const [loading, setLoading] = useState(true);
 
   const editETA = (i) => {
       console.log("edit eta " + i);
   }
 
+
+  if(loading){
+    return <h1>Loading</h1>
+  }
+  else{
+    console.log(orders_json);
+  }
 
   return (
     <div>
@@ -209,7 +234,7 @@ export default function Pos() {
               <thead>
                   <tr>
                       <th className="text-center"></th>
-                      <th className="text-center">Client User ID</th>
+                      <th className="text-center">Client Username</th>
                       <th className="text-center">Order</th>
                       <th className="text-center">ETA</th>
                       <th className="text-center">Update ETA</th>
@@ -220,9 +245,9 @@ export default function Pos() {
                       return (
                           <tr>
                               <td scope="row">{i+1}</td>
-                              <td width="10%">{order["iduser"]}</td>
-                              <td width="10%">{order["order"]}</td>
-                              <td className="text-center" width="25%">{order["eta"]}</td>
+                              <td width="10%">{order["attributes"]["person"]["username"]}</td>
+                              <td width="10%">{order["attributes"]["itemNames"][0]}</td>
+                              <td className="text-center" width="25%"></td>
                               <td className="text-center" width="10%">
                                   <Button variant="secondary" onClick={(e) => {editETA(i)}}>Edit ETA</Button>
                               </td>
