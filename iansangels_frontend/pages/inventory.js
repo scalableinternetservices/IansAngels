@@ -89,8 +89,8 @@ export default function PosInventory() {
                       return (
                           <tr>
                               <td scope="row" width="5%">{i+1}</td>
-                              <td width="30%">{inventory["foodName"]}</td>
-                              <td width="10%">{inventory["quantity"]}</td>
+                              <td className="text-center" width="30%">{inventory["attributes"]["foodName"]}</td>
+                              <td className="text-center" width="10%">{inventory["attributes"]["quantity"]}</td>
                               <td className="text-center" width="10%">
                                   <Button variant="secondary" onClick={(e) => {editInventory(i)}}>Edit Item</Button>
                               </td>
