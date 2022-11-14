@@ -25,7 +25,7 @@ function App() {
   const [shakes, setShakes] = useState(false);
 
   const [cart, setCart] = useState([]);
-  const [cartTotalPrice, setCartTotalPrice] = useState(0);
+  const [cartOpened, setCartOpened] = useState(false);
   const [overlap, setOverlap] = useState(false);
 
   const [menus_json, setMenus_json] = useState([]);
@@ -55,8 +55,8 @@ function App() {
       <Cart
         cart={cart}
         setCart={setCart}
-        // cartOpened={cartOpened}
-        // setCartOpened={setCartOpened}
+        cartOpened={cartOpened}
+        setCartOpened={setCartOpened}
       />
 
       <div id={"page-wrap"}>
@@ -74,6 +74,7 @@ function App() {
           lunch={lunch}
           shakes={shakes}
           cart={cart}
+          setCartOpened={setCartOpened}
         />
       </div>
 

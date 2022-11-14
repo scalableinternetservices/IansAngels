@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import Cart from "../ShoppingCart/Cart/Cart";
 // import imgAllMenu from "/food_bg.jpg";
 
-const MenuAll = ({ all, items, cart }) => {
+const MenuAll = ({ all, items, cart , setCartOpened}) => {
   const itemContainer = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -32,8 +32,9 @@ const MenuAll = ({ all, items, cart }) => {
               <motion.div>
                 <a
                   onClick={() => {
-                    console.log(item.title)
-                    cart.push(item.id)
+                    console.log(item.title);
+                    cart.push(item.id);
+                    setCartOpened(true);
                   }}
                   style={{ cursor: "pointer" }}
                 >

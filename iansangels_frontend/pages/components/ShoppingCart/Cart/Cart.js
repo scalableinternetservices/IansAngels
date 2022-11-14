@@ -1,5 +1,5 @@
 import styles from "./Cart.module.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { css, jsx, Global } from "@emotion/react";
 // import { ReactComponent as Right } from "../../Resources/image/arrowRight.svg";
 // import { ReactComponent as Cross } from "../../Resources/image/cross.svg";
@@ -11,9 +11,8 @@ import { slide as Menu } from "react-burger-menu";
 import MenuData from "../../Menu/MenuData";
 import Container from "react-bootstrap/Container";
 
-const Cart = ({cart, setCart}) =>{
+const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
 
-  const [cartOpened, setCartOpened] = useState(false);
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
 
   const itemContainer = {
@@ -68,18 +67,22 @@ const Cart = ({cart, setCart}) =>{
       background: "rgba(0, 0, 0, 0.3)",
     },
   };
-  const updateCart = (e) => {
+  const updateCart = (state) => {
 
     // updating cart list
     console.log(cart);
     setCart(cart);
-    setCartOpened(!cartOpened);
+    // setCartOpened(!cartOpened);
+    console.log("update cart state: " + state.isOpen)
+    setCartOpened(state.isOpen)
 
     updateCartPrice();
   }
 
   const removeCartItem = ({i,e}) => {
     console.log("removing index: "+i);
+    // let newCart = cart.filter((_,index) => index !==i)
+    // setCart([...newCart]);
     setCart((current) => current.filter((_,index) => index !==i))
     // setCart(cart.splice(i,1));
     updateCartPrice();
@@ -92,10 +95,15 @@ const Cart = ({cart, setCart}) =>{
     cart.forEach((item) => {
       price += MenuData[item-1].price;
     })
-    setCartTotalPrice(price);
+    setCartTotalPrice((current)=> current=price);
 
     console.log("Cart updated, price:" + price);
   }
+
+  useEffect(() => {
+    updateCartPrice();
+  }, [cart]);
+
 
   return(
       <Menu
@@ -104,7 +112,9 @@ const Cart = ({cart, setCart}) =>{
         pageWrapId={"page-wrap"}
         outerContainerId={"outer-container"}
         customBurgerIcon={<img src="/static/img/cart.jpeg" />}
-        onStateChange={ updateCart }
+        onStateChange={ (state) => updateCart(state) }
+        isOpen={cartOpened}
+      
       >
 
         <h3>Cart</h3>
