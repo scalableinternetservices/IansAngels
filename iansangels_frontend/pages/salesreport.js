@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
@@ -27,6 +28,13 @@ export default function PosSales() {
                 <Nav.Link href="/pos">POS Home</Nav.Link>
                 <Nav.Link href="/inventory">Inventory</Nav.Link>
                 <Nav.Link href="/menus">View/Edit Menus</Nav.Link>
+                <NavDropdown title="POS Pages" id="basic-nav-dropdown">
+                  <NavDropdown.Item href="/pos">POS Home (Current Orders)</NavDropdown.Item>
+                  <NavDropdown.Divider />
+                  <NavDropdown.Item href="/salesreport">Sales Report</NavDropdown.Item>
+                  <NavDropdown.Item href="/inventory">Inventory</NavDropdown.Item>
+                  <NavDropdown.Item href="/menus">View/Edit Menus</NavDropdown.Item>
+                </NavDropdown>
               </Nav>
             </Navbar.Collapse>
           </Container>

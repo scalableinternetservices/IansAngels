@@ -200,9 +200,9 @@ export default function Pos() {
   if(loading){
     return <h1>Loading</h1>
   }
-  else{
+  /*else{
     console.log(orders_json);
-  }
+  }*/
 
   return (
     <div>
@@ -218,6 +218,13 @@ export default function Pos() {
               <Nav.Link href="/menus">View/Edit Menus</Nav.Link>
               <Nav.Link href="/client">Client</Nav.Link>
               <Nav.Link href="/kitchen">Kitchen</Nav.Link>
+              <NavDropdown title="POS Pages" id="basic-nav-dropdown">
+                <NavDropdown.Item href="/pos">POS Home (Current Orders)</NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item href="/salesreport">Sales Report</NavDropdown.Item>
+                <NavDropdown.Item href="/inventory">Inventory</NavDropdown.Item>
+                <NavDropdown.Item href="/menus">View/Edit Menus</NavDropdown.Item>
+              </NavDropdown>
             </Nav>
           </Navbar.Collapse>
         </Container>
