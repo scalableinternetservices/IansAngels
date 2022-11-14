@@ -8,7 +8,7 @@ import Breakfast from "./MenuBreakfast";
 import Lunch from "./MenuLunch";
 import Shakes from "./MenuShakes";
 
-const MenuItems = ({ items, all, breakfast, lunch, shakes }) => {
+const MenuItems = ({ items, all, breakfast, lunch, shakes, cart, setCartOpened}) => {
   const container = {
     hidden: { opacity: 0 },
     visible: {
@@ -102,7 +102,7 @@ const MenuItems = ({ items, all, breakfast, lunch, shakes }) => {
         }
       `}
     >
-      <AllItems all={all} items={items} />
+      <AllItems all={all} items={items} cart={cart} setCartOpened={setCartOpened}/>
       <Breakfast breakfast={breakfast} items={items} />
       <Lunch lunch={lunch} items={items} />
       <Shakes shakes={shakes} items={items} />

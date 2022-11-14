@@ -1,6 +1,9 @@
+import { SettingsApplicationsRounded } from "@mui/icons-material";
 import { motion } from "framer-motion";
-import imgAllMenu from "../img/undraw_barbecue.svg";
-const MenuAll = ({ all, items }) => {
+import Cart from "../ShoppingCart/Cart/Cart";
+// import imgAllMenu from "/food_bg.jpg";
+
+const MenuAll = ({ all, items, cart , setCartOpened}) => {
   const itemContainer = {
     hidden: { y: 20, opacity: 0 },
     visible: {
@@ -19,13 +22,25 @@ const MenuAll = ({ all, items }) => {
             variants={itemContainer}
             transition={{ delay: i * 0.2 }}
           >
-            <img src={imgAllMenu} alt="food burger" />
+            <img src={item.imageSrc} alt="food burger" />
             <motion.div className="item-content">
               <motion.div className="item-title-box">
                 <motion.h5 className="item-title">{item.title}</motion.h5>
                 <motion.h5 className="item-price">${item.price}</motion.h5>
               </motion.div>
               <motion.p className="item-desc">{item.desc}</motion.p>
+              <motion.div>
+                <a
+                  onClick={() => {
+                    console.log(item.title);
+                    cart.push(item.id);
+                    setCartOpened(true);
+                  }}
+                  style={{ cursor: "pointer" }}
+                >
+                  Add to cart -&gt;
+                </a>
+              </motion.div>
             </motion.div>
           </motion.div>
         ))}
