@@ -1,127 +1,136 @@
 import styles from "./Cart.module.css";
 import React, { useState } from "react";
+import { css, jsx, Global } from "@emotion/react";
 // import { ReactComponent as Right } from "../../Resources/image/arrowRight.svg";
 // import { ReactComponent as Cross } from "../../Resources/image/cross.svg";
 import { motion, AnimatePresence } from "framer-motion";
 // import AnimatedCart from "../../Containers/AnimatedPage/AnimatedCart";
 // import AnimatedCard from "../../Containers/AnimatedPage/AnimatedCard";
+// import { slide as Menu } from "react-burger-menu";
+import { slide as Menu } from "react-burger-menu";
+import MenuData from "../../Menu/MenuData";
+import Container from "react-bootstrap/Container";
 
-const Cart = (props) => {
-  const {
-    cartAmount,
-    cart,
-    handleOpenCart,
-    handleCloseCart,
-    cartDisplayed,
-    handleHover,
-    hoverState,
-    clearCart,
-    handleRemoveFromCart,
-    openGamePage,
-  } = props;
+const Cart = ({cart, setCart}) =>{
 
-  const [total, setTotal] = useState(0);
-  let newTotal = 0;
-  cart.forEach((item, i) => {
-    let priceAsNumber = parseFloat(item.price);
-    let currentTotal = parseFloat(newTotal);
-    newTotal = (priceAsNumber + currentTotal).toFixed(2);
+  const [cartOpened, setCartOpened] = useState(false);
+  const [cartTotalPrice, setCartTotalPrice] = useState(0);
 
-    if (i === cart.length) {
-      setTotal(newTotal);
-    }
-  });
-
-  const variants = {
-    initial: { x: 100 },
-    animate: {
-      x: 0,
-      transition: { x: { type: "spring", duration: 1.2, bounce: 0.4 } },
-    },
-    exit: {
-      x: 100,
-      transition: { x: { type: "spring", duration: 1.2, bounce: 0.575 } },
+  const itemContainer = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
     },
   };
 
-  return (
-    <div className={styles.cartWindow}>
-      <div className={styles.back} onClick={handleCloseCart}></div>
-      {/* <AnimatedCart> */}
-      <div
-        className={styles.cart}
-        style={{ backgroundColor: "#1A1A1A", height: "100vh" }}
+  const styles = {
+    bmBurgerButton: {
+      position: "fixed",
+      width: "36px",
+      height: "30px",
+      right: "36px",
+      top: "72px",
+    },
+    bmBurgerBars: {
+      background: "#373a47",
+    },
+    bmBurgerBarsHover: {
+      background: "#a90000",
+    },
+    bmCrossButton: {
+      height: "24px",
+      width: "24px",
+    },
+    bmCross: {
+      background: "#bdc3c7",
+    },
+    bmMenuWrap: {
+      position: "fixed",
+      height: "100%",
+    },
+    bmMenu: {
+      background: "#373a47",
+      padding: "2.5em 1.5em 0",
+      fontSize: "1.15em",
+    },
+    bmMorphShape: {
+      fill: "#373a47",
+    },
+    bmItemList: {
+      color: "#b8b7ad",
+      padding: "0.8em",
+    },
+    bmItem: {
+      display: "inline-block",
+    },
+    bmOverlay: {
+      background: "rgba(0, 0, 0, 0.3)",
+    },
+  };
+  const updateCart = (e) => {
+
+    // updating cart list
+    console.log(cart);
+    setCart(cart);
+    setCartOpened(!cartOpened);
+
+    updateCartPrice();
+  }
+
+  const removeCartItem = ({i,e}) => {
+    console.log("removing index: "+i);
+    setCart((current) => current.filter((_,index) => index !==i))
+    // setCart(cart.splice(i,1));
+    updateCartPrice();
+    console.log("Cart item removed, new cart:" + cart);
+  }
+
+  const updateCartPrice = (e) => {
+    // updating cart price
+    let price = 0;
+    cart.forEach((item) => {
+      price += MenuData[item-1].price;
+    })
+    setCartTotalPrice(price);
+
+    console.log("Cart updated, price:" + price);
+  }
+
+  return(
+      <Menu
+        styles={styles}
+        right
+        pageWrapId={"page-wrap"}
+        outerContainerId={"outer-container"}
+        customBurgerIcon={<img src="/static/img/cart.jpeg" />}
+        onStateChange={ updateCart }
       >
-        <div className={styles.top}>
-          <div className={styles.topHeader}>
-            <h2>
-              {cartAmount >= 1
-                ? cartAmount > 1
-                  ? `${cartAmount} games`
-                  : "1 game"
-                : "No games added"}
-            </h2>
-            <h3 onClick={clearCart}>{cartAmount >= 1 ? "Clear" : ""}</h3>
-          </div>
 
-          <div className={styles.topGames}>
-            {cart.map((item, i) => {
-              return (
-                <motion.div
-                  className={styles.item}
-                  key={i}
-                  variants={variants}
-                  initial="initial"
-                  animate="animate"
-                  exit="exit"
-                >
-                  <h3 id={item.surname} onClick={openGamePage}>
-                    {item.name}
-                  </h3>
-                  <div>
-                    ${item.price}
-                    <button
-                      id={item.id}
-                      onClick={handleRemoveFromCart}
-                      className={styles.removeButton}
-                      aria-label="Close"
-                    >
-                      {/* <Cross className={styles.cross} /> */}
-                    </button>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div
-          className={styles.bottom}
-          style={{
-            width: "87.5%",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-          }}
-        >
-          <h3>Total: ${newTotal}</h3>
-          <button
-            id="24"
-            onMouseEnter={handleHover}
-            onMouseLeave={handleHover}
-            // style={{ color: hoverState[24].hovered ? "#92f" : "#fff" }}
-            aria-label="Checkout"
+        <h3>Cart</h3>
+        <motion.div>
+        {cart.map((item, i) => (
+          <motion.div
+            className="menu-items"
+            key={item.id}
+            variants={itemContainer}
+            transition={{ delay: i * 0.2 }}
           >
-            Checkout
-            {/* <Right 
-                                      className={styles.right}
-                                      style={{ fill: hoverState[24].hovered ? "#92f" : "#fff" }}
-                                    /> */}
-          </button>
-        </div>
-      </div>
-      {/* </AnimatedCart> */}
-    </div>
+            {/* <img src={item.imageSrc} alt="food burger" /> */}
+            <motion.div className="item-content" key={i}>
+              <motion.div className="item-title-box">
+                <motion.h5 className="item-title">{MenuData[item-1].title}</motion.h5>
+                <motion.h5 className="item-price">${MenuData[item-1].price}</motion.h5>
+              </motion.div>
+              <button onClick={(e) => removeCartItem({i},e)}>Remove</button>
+            </motion.div>
+          </motion.div>
+        ))}
+        <motion.h5 className="item-title">Total Price: {cartTotalPrice}</motion.h5>
+        </motion.div>
+
+      </Menu>
+     
   );
 };
 
