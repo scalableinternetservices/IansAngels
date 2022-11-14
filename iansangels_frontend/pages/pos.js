@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
@@ -57,7 +58,104 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 */
 
 
-const getOrders = () => {
+/*
+//useEffect runs when any object given in the array at the end re-renders, when array is empty it runs on initial page render. Here we grab initial data
+useEffect(() => {
+        var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+        var endpoint = "/posts";
+        fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+            .then(response => 
+                response.json().then(data => {
+                    setPosts_json(data["data"])
+                    setLoading(false);
+            }))
+    }, [])
+
+    const submitPost = () => { //hook function up to a button or whatever
+        console.log("submit post");
+        console.log("uid: " + newUserId);
+        console.log("pid: " + newPostId);
+        console.log("ptxt: " + newPostText);
+        console.log("purl: " + newPostURL);
+
+        if(newUserId == "" || newPostId == ""){
+            window.alert("Missing Ids");
+            return;
+        }
+
+        const opts = {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ //object to be posted
+                "user_id": newUserId, //newUserId,etc are state objects made with useState() that we set to be the value we want push to db
+                "idpost": newPostId,
+                "text": newPostText,
+                "imageurl": newPostURL,
+            })
+        };
+
+        var rails_url = "http://localhost:3001";
+        var endpoint = "/posts";
+        fetch(rails_url+endpoint, opts) //give it options to do post/patch/delete requests
+            .then(response => {
+                window.location.reload();
+            })
+
+    }
+
+    const deletePost = (i) => {
+        console.log("delete " + i);
+
+        const opts = {
+            method: 'DELETE',
+        };
+
+        var rails_url = "http://localhost:3001";
+        var endpoint = "/posts/"+i;          //talk with erwan for the endpoint here, needs to refer to the specific entry in db to delete
+        fetch(rails_url+endpoint, opts)
+            .then(response => {
+                window.location.reload();
+            })
+    }
+*/
+
+/*
+const handleCloseSubmit = () => {
+        console.log("submit edit");
+        console.log("uid: " + newUserId);
+        console.log("pid: " + newPostId);
+        console.log("ptxt: " + newPostText);
+        console.log("purl: " + newPostURL);
+
+        if(newUserId == "" || newPostId == ""){
+            window.alert("Missing Ids");
+            return;
+        }
+        
+        setShowModal(false);
+
+        const opts = {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                "user_id": newUserId,
+                "idpost": newPostId,
+                "text": newPostText,
+                "imageurl": newPostURL,
+            })
+        };
+
+        var rails_url = "http://localhost:3001";
+        var endpoint = "/posts/"+posts_json[editNum]["attributes"]["idpost"]; //talk with erwan for the endpoint here, needs to refer to the specific entry in db to update
+        fetch(rails_url+endpoint, opts)
+            .then(response => {
+                window.location.reload();
+            })
+    }
+*/
+
+
+/*const getOrders = () => {
     var orders_json = [
         {
           "iduser": 1,
@@ -71,16 +169,40 @@ const getOrders = () => {
         }
     ];
     return orders_json;
-}
+}*/
 
 
-export default function Home() {
-  var orders_json = getOrders();
+export default function Pos() {
+
+    const [orders_json, setOrders_json] = useState([]);
+
+    useEffect(() => {
+        var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+        var endpoint = "/POS/orders";
+        fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+            .then(response => 
+                response.json().then(data => {
+                    setOrders_json(data["data"])
+                    setLoading(false);
+            }))
+    }, [])
+
+  
+  //var orders_json = getOrders();
+
+  const [loading, setLoading] = useState(true);
 
   const editETA = (i) => {
       console.log("edit eta " + i);
   }
 
+
+  if(loading){
+    return <h1>Loading</h1>
+  }
+  /*else{
+    console.log(orders_json);
+  }*/
 
   return (
     <div>
@@ -91,10 +213,18 @@ export default function Home() {
             <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link href="/">Home</Nav.Link>
-              <Nav.Link href="/">Sales Report</Nav.Link>
-              <Nav.Link href="/">Inventory</Nav.Link>
+              <Nav.Link href="/salesreport">Sales Report</Nav.Link>
+              <Nav.Link href="/inventory">Inventory</Nav.Link>
+              <Nav.Link href="/menus">View/Edit Menus</Nav.Link>
               <Nav.Link href="/client">Client</Nav.Link>
               <Nav.Link href="/kitchen">Kitchen</Nav.Link>
+              <NavDropdown title="POS Pages" id="basic-nav-dropdown">
+                <NavDropdown.Item href="/pos">POS Home (Current Orders)</NavDropdown.Item>
+                <NavDropdown.Divider />
+                <NavDropdown.Item href="/salesreport">Sales Report</NavDropdown.Item>
+                <NavDropdown.Item href="/inventory">Inventory</NavDropdown.Item>
+                <NavDropdown.Item href="/menus">View/Edit Menus</NavDropdown.Item>
+              </NavDropdown>
             </Nav>
           </Navbar.Collapse>
         </Container>
@@ -111,7 +241,7 @@ export default function Home() {
               <thead>
                   <tr>
                       <th className="text-center"></th>
-                      <th className="text-center">Client User ID</th>
+                      <th className="text-center">Client Username</th>
                       <th className="text-center">Order</th>
                       <th className="text-center">ETA</th>
                       <th className="text-center">Update ETA</th>
@@ -122,9 +252,9 @@ export default function Home() {
                       return (
                           <tr>
                               <td scope="row">{i+1}</td>
-                              <td width="10%">{order["iduser"]}</td>
-                              <td width="10%">{order["order"]}</td>
-                              <td className="text-center" width="25%">{order["eta"]}</td>
+                              <td width="10%">{order["attributes"]["person"]["username"]}</td>
+                              <td width="10%">{order["attributes"]["itemNames"][0]}</td>
+                              <td className="text-center" width="25%"></td>
                               <td className="text-center" width="10%">
                                   <Button variant="secondary" onClick={(e) => {editETA(i)}}>Edit ETA</Button>
                               </td>
@@ -134,19 +264,6 @@ export default function Home() {
               </tbody>
           </table>
       </div>
-      <br/>
-      <div className="m-5">
-        <h2>Menu</h2>
-      </div>
-      <br/>
-      <div className="m-5">
-        <h2>Inventory</h2>
-      </div>
-      <br/>
-      <div className="m-5">
-        <h2>Sales Report</h2>
-      </div>
-      <br/>
     </div>
   )
 }

@@ -7,19 +7,22 @@ people = Person.create([
         username: "Erwan",
         password: "password",
         email: "Erwan_app@gmail.com",
-        position: "client"
+        position: "client",
+        completedOrders: []
     },
     {
         username: "Rhys",
         password: "password",
         email: "Rhys_app@gmail.com",
-        position: "Manager"
+        position: "Manager",
+        completedOrders: []
     },
     {
         username: "Max",
         password: "password",
         email: "Max_app@gmail.com",
-        position: "Cook"
+        position: "Cook",
+        completedOrders: []
     }
 ])
 

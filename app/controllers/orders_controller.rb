@@ -45,6 +45,13 @@ class OrdersController < ApplicationController
 
         order = Order.find_by(person_id: personData.id)
 
+        personData.completedOrders.append(order.itemNames)
+        if personData.update(person_params)
+            print "added to completed orders"
+        else
+            print "unable to add to completed orders"
+        end
+
         if order.destroy
             head :no_content
         else
@@ -56,5 +63,9 @@ class OrdersController < ApplicationController
 
     def order_params
         params.require(:order).permit(:ETA, :person_id, :itemNames => [])
+    end
+
+    def person_params
+        params.permit(:username, :password, :email, :position, :completedOrders => [[]])
     end
 end

@@ -9,6 +9,7 @@ class InventoryController < ApplicationController
         #inventoryJSON = InventorySerializer.new(inventory).serialized_json
 
         #total = menuJSON + ordersJSON + inventoryJSON
+        inventory = InventorySerializer.new(inventory).serialized_json
 
         render json: inventory
     end

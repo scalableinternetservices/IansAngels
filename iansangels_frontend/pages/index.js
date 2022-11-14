@@ -30,20 +30,10 @@ export default function Home() {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      <div
-        style={{
-          backgroundImage: `url(${bg_image.src})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain",
-          height: 1000,
-          width: "auto",
-          overflow: "auto",
-        }}
-      >
+
+      <div style={{backgroundImage: `url(${bg_image.src})`, backgroundRepeat:"no-repeat", backgroundSize:"contain", height:1000, width:"auto", overflow:"auto"}}>
         <div className="m-5">
-          <h1 className="text-center">
-            Welcome to Ian's Angels All-In-One Restaurant WebApp
-          </h1>
+          <h1 className="text-center">Welcome to Ian's Angels All-In-One Restaurant WebApp</h1>
         </div>
         <div className="m-5">
           <Container>
