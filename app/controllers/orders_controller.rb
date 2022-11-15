@@ -6,7 +6,11 @@ class OrdersController < ApplicationController
     end
 
     def show
-        order = Order.find_by(id: params[:id])
+        #order = Order.find_by(id: params[:id])
+        order = Rails.cache.fetch(params[:id], expires_in: 10.minutes) do
+            print "I am executing this block"
+            Order.find_by(id: params[:id])
+        end
         render json: OrderSerializer.new(order).serialized_json
     end
 
