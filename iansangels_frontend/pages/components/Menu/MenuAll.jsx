@@ -12,6 +12,7 @@ const MenuAll = ({ all, items, cart , setCartOpened}) => {
     },
   };
 
+
   return (
     <>
       {all &&
@@ -22,13 +23,14 @@ const MenuAll = ({ all, items, cart , setCartOpened}) => {
             variants={itemContainer}
             transition={{ delay: i * 0.2 }}
           >
-            <img src={item.imageSrc} alt="food burger" />
+            <img src={item.attributes.imageURL} alt="food burger" />
+          {console.log(item)}
             <motion.div className="item-content">
               <motion.div className="item-title-box">
-                <motion.h5 className="item-title">{item.title}</motion.h5>
-                <motion.h5 className="item-price">${item.price}</motion.h5>
+                <motion.h5 className="item-title">{item.attributes.itemName}</motion.h5>
+                <motion.h5 className="item-price">${item.attributes.price}</motion.h5>
               </motion.div>
-              <motion.p className="item-desc">{item.desc}</motion.p>
+              <motion.p className="item-desc">{item.attributes.description}</motion.p>
               <motion.div>
                 <a
                   onClick={() => {

@@ -3,7 +3,7 @@
 import { css, jsx, Global } from "@emotion/react";
 import { useState, useEffect } from "react";
 import MenuItems from "./components/Menu/MenuItems";
-import MenuData from "./components/Menu/MenuData";
+// import MenuData from "./components/Menu/MenuData";
 // import {menuData} from "./components/MenuData";
 import Navbar from "./components/Menu/Navbar";
 
@@ -30,18 +30,24 @@ function App() {
 
   const [menus_json, setMenus_json] = useState([]);
 
-  // useEffect(() => {
-  //   var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-  //   var endpoint = "/client/menu";
-  //   fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
-  //       .then(response => 
-  //           response.json().then(data => {
-  //               setOrders_json(data["data"])
-  //               setLoading(false);
-  //       }))
-  // }, [])
+  useEffect(() => {
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/POS/menu";
+    fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+        .then(response => 
+            response.json().then(data => {
+              setMenus_json(data["data"])
+              setLoading(false);
+              console.log(menus_json)
+              // MenuData = JSON.parse(menus_json); 
+        }))
+  }, [])
 
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
+
+  if(loading){
+    return <h1>Loading</h1>
+  }
 
   return (
     <div
@@ -68,7 +74,7 @@ function App() {
         />
 
         <MenuItems
-          items={MenuData}
+          items={menus_json}
           all={all}
           breakfast={breakfast}
           lunch={lunch}
