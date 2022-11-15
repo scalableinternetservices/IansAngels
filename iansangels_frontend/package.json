@@ -14,14 +14,13 @@
     "@mui/icons-material": "^5.10.9",
     "@mui/material": "^5.10.12",
     "bootstrap": "^5.2.2",
-    "framer-motion": "^7.6.4",
+    "framer-motion": "^7.6.6",
     "next": "13.0.0",
     "react": "18.2.0",
     "react-bootstrap": "^2.5.0",
     "react-burger-menu": "^3.0.8",
     "react-dom": "18.2.0",
     "unfetch": "^4.2.0"
-
   },
   "devDependencies": {
     "@svgr/webpack": "^6.5.1",
