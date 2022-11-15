@@ -1,6 +1,10 @@
-import styles from "./Cart.module.css";
+import style from "./Cart.module.css";
 import React, { useEffect, useState } from "react";
 import { css, jsx, Global } from "@emotion/react";
+import { useNavigate } from "react-router-dom";
+import Nav from 'react-bootstrap/Nav';
+
+
 // import { ReactComponent as Right } from "../../Resources/image/arrowRight.svg";
 // import { ReactComponent as Cross } from "../../Resources/image/cross.svg";
 import { motion, AnimatePresence } from "framer-motion";
@@ -64,7 +68,7 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
       display: "inline-block",
     },
     bmOverlay: {
-      background: "rgba(0, 0, 0, 0.3)",
+      background: "rgba(0, 0, 0, 0)",
     },
   };
   const updateCart = (state) => {
@@ -93,7 +97,7 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
     // updating cart price
     let price = 0;
     cart.forEach((item) => {
-      price += MenuData[item-1].price;
+      price += item.price;
     })
     setCartTotalPrice((current)=> current=price);
 
@@ -111,10 +115,16 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
     },
   };
 
+  // let navigate = useNavigate(); 
+  // const routeChange = () =>{ 
+  //   let path = `newPath`; 
+  //   navigate(path);
+  // }
+
 
   return(
 
-    <motion.div
+    <motion.div 
       className="MenuItems container"
       variants={container}
       initial="hidden"
@@ -143,14 +153,16 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
             {/* <img src={item.imageSrc} alt="food burger" /> */}
             <motion.div className="item-content" key={i}>
               <motion.div className="item-title-box">
-                <motion.h5 className="item-title">{MenuData[item-1].title}</motion.h5>
-                <motion.h5 className="item-price">${MenuData[item-1].price}</motion.h5>
+                <motion.h5 className="item-title">{item.title}</motion.h5>
+                <motion.h5 className="item-price">${item.price}</motion.h5>
               </motion.div>
               <button onClick={(e) => removeCartItem({i},e)}>Remove</button>
             </motion.div>
           </motion.div>
         ))}
         <motion.h5 className="item-title">Total Price: {cartTotalPrice}</motion.h5>
+        {/* <button onClick={routeChange}>Check Out</button> */}
+        <Nav.Link href="/client/checkout">Check Out</Nav.Link>
         </motion.div>
 
       </Menu>

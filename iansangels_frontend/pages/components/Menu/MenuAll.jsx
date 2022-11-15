@@ -34,8 +34,11 @@ const MenuAll = ({ all, items, cart , setCartOpened}) => {
               <motion.div>
                 <a
                   onClick={() => {
-                    console.log(item.title);
-                    cart.push(item.id);
+                    console.log(item.attributes.itemName);
+                    cart.push({
+                      title: item.attributes.itemName,
+                      price: item.attributes.price
+                    });
                     setCartOpened(true);
                   }}
                   style={{ cursor: "pointer" }}
