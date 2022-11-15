@@ -13,7 +13,7 @@ const MenuBreakfast = ({ breakfast, items }) => {
     <>
       {breakfast &&
         items
-          .filter((item) => item.category === "breakfast")
+          .filter((item) => item.attributes.category === "breakfast")
           .map((item, i) => (
             <motion.div
               className="menu-items"
@@ -21,13 +21,20 @@ const MenuBreakfast = ({ breakfast, items }) => {
               variants={itemContainer}
               transition={{ delay: i * 0.2 }}
             >
-              <img src={item.imageSrc} alt="food burger" />
+              {/* <img src={imgLunchMenu} alt="s burger" /> */}
+              <img src={item.attributes.imageURL} alt="food burger" />
+
+              {/* <img src={require(item.image)} alt="s burger" /> */}
+
+              {/* {dish1} */}
+
+              {/* <imgLunchMenu/> */}
               <motion.div className="item-content">
                 <motion.div className="item-title-box">
-                  <motion.h5 className="item-title">{item.title}</motion.h5>
-                  <motion.h5 className="item-price">${item.price}</motion.h5>
+                  <motion.h5 className="item-title">{item.attributes.itemName}</motion.h5>
+                  <motion.h5 className="item-price">${item.attributes.price}</motion.h5>
                 </motion.div>
-                <motion.p className="item-desc">{item.desc}</motion.p>
+                <motion.p className="item-desc">{item.attributes.description}</motion.p>
                 <motion.div>
                   <a
                     onClick={() => console.log(item.title)}

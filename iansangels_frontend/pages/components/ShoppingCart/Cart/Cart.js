@@ -104,8 +104,22 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
     updateCartPrice();
   }, [cart]);
 
+  const container = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+    },
+  };
+
 
   return(
+
+    <motion.div
+      className="MenuItems container"
+      variants={container}
+      initial="hidden"
+      animate="visible"
+      >
       <Menu
         styles={styles}
         right
@@ -140,6 +154,8 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
         </motion.div>
 
       </Menu>
+
+    </motion.div>
      
   );
 };
