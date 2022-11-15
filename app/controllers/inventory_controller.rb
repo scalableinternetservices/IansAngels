@@ -10,12 +10,20 @@ class InventoryController < ApplicationController
 
         #total = menuJSON + ordersJSON + inventoryJSON
         inventory = InventorySerializer.new(inventory).serialized_json
-
         render json: inventory
     end
 
+    # The print is for illustrative purposes
+    # If we have already quiered for specific id, the inside of the block
+    # will not execute (id is cached)
+
+    # When entering block (not cached) Completed 200 OK in 109ms Views: 0.1ms | ActiveRecord: 15.6ms 
+    # When skipping block (cached) Completed 200 OK in 9ms Views: 0.2ms | ActiveRecord: 0.7ms
     def show
-        inventory = Inventory.find_by(id: params[:id])
+        inventory = Rails.cache.fetch([self, :id], expires_in: 10.minutes) do
+            puts("I am executing this block")
+            Inventory.find_by(id: params[:id])
+        end
         render json: InventorySerializer.new(inventory).serialized_json
     end
 
