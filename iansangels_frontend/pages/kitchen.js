@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import Head from "next/head";
 import Image from "next/image";
@@ -41,9 +41,9 @@ const getOrders = () => {
 
 export default function Kitchen() {
   const [show, setShow] = useState(false);
-  const [editETAId, setEditETAId] = useState(0);
+  const [editETAOrder, setEditETAOrder] = useState(0);
   const [editETAValue, setEditETAValue] = useState(0);
-  const [ordersJson, setOrdersJson] = useState(getOrders());
+  const [ordersJson, setOrdersJson] = useState([]);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -52,13 +52,46 @@ export default function Kitchen() {
   };
   const handleSubmit = () => {
     setShow(false);
-    ordersJson[editETAId].eta = editETAValue;
+    // ordersJson[editETAId].eta = editETAValue;
+    var rails_url = "http://0.0.0.0:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/kitchen";
+    fetch(rails_url + endpoint, {
+      method: "PATCH",
+      body: JSON.stringify({
+        username: editETAOrder.attributes.person.username,
+        ETA: editETAValue,
+      }),
+      headers: {
+        "Content-type": "application/json; charset=UTF-8",
+      },
+    })
+      .then((response) => response.json())
+      .then((json) => {
+        console.log(json);
+        window.location.reload();
+      });
   };
 
-  const editETA = (i) => {
-    console.log("edit eta " + i);
-    setEditETAId(i);
-    setEditETAValue(ordersJson[i].eta);
+  useEffect(() => {
+    var rails_url = "http://0.0.0.0:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/kitchen";
+    fetch(rails_url + endpoint) //fetch with no options does a get request to that endpoint
+      .then((response) =>
+        response.json().then((data) => {
+          // setOrders_json(data["data"]);
+          // setLoading(false);
+          let orders = data.data;
+          orders.sort((a, b) => a.id - b.id);
+          setOrdersJson(orders);
+          // console.log(data);
+        })
+      );
+  }, []);
+
+  const editETA = (order) => {
+    console.log("edit eta " + order.id);
+    setEditETAOrder(order);
+    setEditETAValue(order.attributes.ETA);
     handleShow();
   };
 
@@ -95,37 +128,44 @@ export default function Kitchen() {
               </tr>
             </thead>
             <tbody>
-              {ordersJson.map((order, i) => {
-                return (
-                  <tr>
-                    <td scope="row">{i + 1}</td>
-                    <td width="10%">{order["iduser"]}</td>
-                    <td width="10%">{order["order"]}</td>
-                    <td className="text-center" width="25%">
-                      {order["eta"]}
-                    </td>
-                    <td className="text-center" width="10%">
-                      <Button
-                        variant="secondary"
-                        onClick={(e) => {
-                          editETA(i);
-                        }}
-                      >
-                        Edit ETA
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
+              {console.log(ordersJson)}
+              {ordersJson &&
+                ordersJson.map((order, i) => {
+                  return (
+                    <tr>
+                      <td scope="row">{order.id}</td>
+                      <td width="10%">{order.attributes.person.id}</td>
+                      <td width="20%">
+                        <ul>
+                          {order.attributes.itemNames.map((item) => {
+                            return <li>{item}</li>;
+                          })}
+                        </ul>
+                      </td>
+                      <td className="text-center" width="25%">
+                        {order.attributes.ETA}
+                      </td>
+                      <td className="text-center" width="10%">
+                        <Button
+                          variant="secondary"
+                          onClick={(e) => {
+                            editETA(order);
+                          }}
+                        >
+                          Edit ETA
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
             </tbody>
           </table>
         </div>
-
       </div>
 
       <Modal show={show} onHide={handleClose} animation={false}>
         <Modal.Header closeButton>
-          <Modal.Title>Edit Order {editETAId + 1} ETA</Modal.Title>
+          <Modal.Title>Edit Order {editETAOrder.id} ETA</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
