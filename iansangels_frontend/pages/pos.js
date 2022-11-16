@@ -10,6 +10,8 @@ import Col from 'react-bootstrap/Col';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 
 
 /*
@@ -188,12 +190,51 @@ export default function Pos() {
     }, [])
 
   
-  //var orders_json = getOrders();
+    //var orders_json = getOrders();
 
-  const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
+
+    const [showModal, setShowModal] = useState(false);
+    const [newETA, setNewETA] = useState("");
+    const [editNum, setEditNum] = useState(0);
+
+    const handleClose = () => setShowModal(false);
+    const handleShow = () => setShowModal(true);
+
+    const handleCloseSubmit = () => {
+        console.log("submit new eta");
+        console.log("new eta: " + newETA);
+        var uname = orders_json[editNum]["attributes"]["person"]["username"];
+
+        if(newETA == ""){
+            window.alert("You need to enter a new ETA");
+            return;
+        }
+        
+        setShowModal(false);
+        setEditNum(0);
+
+        const opts = {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                "username": uname,
+                "ETA": newETA,
+            })
+        };
+
+        var rails_url = "http://localhost:3001";
+        var endpoint = "/POS/orders";
+        fetch(rails_url+endpoint, opts)
+            .then(response => {
+                window.location.reload();
+            })
+    }
 
   const editETA = (i) => {
-      console.log("edit eta " + i);
+    setEditNum(i);
+    console.log("edit eta " + i);
+    handleShow();
   }
 
 
@@ -254,7 +295,7 @@ export default function Pos() {
                               <td scope="row">{i+1}</td>
                               <td width="10%">{order["attributes"]["person"]["username"]}</td>
                               <td width="10%">{order["attributes"]["itemNames"][0]}</td>
-                              <td className="text-center" width="25%"></td>
+                              <td className="text-center" width="25%">{order["attributes"]["ETA"]}</td>
                               <td className="text-center" width="10%">
                                   <Button variant="secondary" onClick={(e) => {editETA(i)}}>Edit ETA</Button>
                               </td>
@@ -264,6 +305,29 @@ export default function Pos() {
               </tbody>
           </table>
       </div>
+      <Modal show={showModal} onHide={handleClose}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Order ETA</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="row">
+            <Form.Group className="mb-3" controlId="formETA">
+              <Form.Label>Edit ETA</Form.Label>
+              <Form.Control placeholder={orders_json[editNum]["attributes"]["ETA"]} onChange={(e) => {
+                setNewETA(e.target.value);
+              }}/>
+            </Form.Group>
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleCloseSubmit}>
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   )
 }
