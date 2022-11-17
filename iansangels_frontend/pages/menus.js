@@ -44,7 +44,8 @@ export default function PosMenus() {
           return;
       }
 
-      var ing_arr = [newIngredients];
+      var ing_arr = newIngredients.split(',');
+      //console.log(ing_arr);
 
       const opts = {
           method: 'POST',
@@ -117,10 +118,12 @@ export default function PosMenus() {
         console.log("new can order: " + newCanOrder);
         var cur_name = menus_json[editNum]["attributes"]["itemName"];
 
-        if(newPrice == "" || newDescription == "" || newCategory == "" || newURL == ""){
-            window.alert("You need to enter all fields");
-            return;
+        if(newPrice == "" || newDescription == "" || newCategory == "" || newURL == "" || newIngredients == ""){
+          window.alert("You need to enter all fields");
+          return;
         }
+
+        var ing_arr = newIngredients.split(',');
         
         setShowModal(false);
         setEditNum(0);
@@ -134,6 +137,7 @@ export default function PosMenus() {
                 "description": newDescription,
                 "category": newCategory,
                 "imageURL": newURL,
+                "ingredients": ing_arr,
                 "canOrder": newCanOrder,
             })
         };
@@ -260,8 +264,8 @@ export default function PosMenus() {
                   </Form.Group>
               </div>
               <div className="col-3 text-center">
-                  <Form.Group className="mb-3" controlId="formURL">
-                      <Form.Label>Ingredients - separate with commas</Form.Label>
+                  <Form.Group className="mb-3" controlId="formIngredients">
+                      <Form.Label>Ingredients - separate with commas, no spaces after commas</Form.Label>
                       <Form.Control placeholder="ingredient 1,ingredient 2,etc,no spaces after commas" onChange={(e) => {
                           setNewIngredients(e.target.value);
                       }}/>
@@ -309,7 +313,13 @@ export default function PosMenus() {
                               <td scope="row" width="5%">{i+1}</td>
                               <td width="10%">{menu["attributes"]["itemName"]}</td>
                               <td width="20%">{menu["attributes"]["description"]}</td>
-                              <td width="20%">{menu["attributes"]["ingredients"][0]}</td>
+                              <td className="text-center" width="15%">
+                                <ul>
+                                  {menu["attributes"]["ingredients"].map((ingredient) => {
+                                    return <li>{ingredient}</li>;
+                                  })}
+                                </ul>
+                              </td>
                               <td className="text-center" width="10%">{menu["attributes"]["category"]}</td>
                               <td className="text-center" width="5%">{menu["attributes"]["canOrder"]?
                                 "True"
@@ -363,6 +373,14 @@ export default function PosMenus() {
                 <Form.Label>Edit Image URL</Form.Label>
                 <Form.Control placeholder={menus_json[editNum]["attributes"]["imageURL"]} onChange={(e) => {
                   setNewURL(e.target.value);
+                }}/>
+              </Form.Group>
+            </div>
+            <div classNme="row">
+              <Form.Group className="mb-3" controlId="formIngredients">
+                <Form.Label>Ingredients - separate with commas, no spaces after commas</Form.Label>
+                <Form.Control placeholder="ingredient 1,ingredient 2,etc,no spaces after commas" onChange={(e) => {
+                    setNewIngredients(e.target.value);
                 }}/>
               </Form.Group>
             </div>

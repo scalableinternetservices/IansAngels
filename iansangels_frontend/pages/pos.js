@@ -294,7 +294,13 @@ export default function Pos() {
                           <tr>
                               <td scope="row">{i+1}</td>
                               <td width="10%">{order["attributes"]["person"]["username"]}</td>
-                              <td width="10%">{order["attributes"]["itemNames"][0]}</td>
+                              <td width="10%">
+                                <ul>
+                                  {order["attributes"]["itemNames"].map((item) => {
+                                    return <li>{item}</li>;
+                                  })}
+                                </ul>
+                              </td>
                               <td className="text-center" width="25%">{order["attributes"]["ETA"]}</td>
                               <td className="text-center" width="10%">
                                   <Button variant="secondary" onClick={(e) => {editETA(i)}}>Edit ETA</Button>

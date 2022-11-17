@@ -53,7 +53,7 @@ export default function Kitchen() {
   const handleSubmit = () => {
     setShow(false);
     // ordersJson[editETAId].eta = editETAValue;
-    var rails_url = "http://0.0.0.0:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
     var endpoint = "/kitchen";
     fetch(rails_url + endpoint, {
       method: "PATCH",
@@ -73,7 +73,7 @@ export default function Kitchen() {
   };
 
   useEffect(() => {
-    var rails_url = "http://0.0.0.0:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
     var endpoint = "/kitchen";
     fetch(rails_url + endpoint) //fetch with no options does a get request to that endpoint
       .then((response) =>
