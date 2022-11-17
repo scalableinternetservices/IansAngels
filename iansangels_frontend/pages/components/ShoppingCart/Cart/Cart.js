@@ -115,7 +115,7 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
   var order = { 
     "ETA": 0,
     "username": "Erwan",
-    "itemNames": cart.title,
+    "itemNames": [],
   }
 
   var requestOptions = {
@@ -125,13 +125,17 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
   }; 
 
   const submitOrder = (e) => {
+    console.log(cart);
+    order.itemNames = cart.map(a => a.title);
+    requestOptions.body = JSON.stringify(order);
+
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
     var endpoint = "/POS/orders";
     fetch(rails_url+endpoint,requestOptions) //fetch with no options does a get request to that endpoint
         .then(response => {
           console.log(response.json());
           setOrderSent(true);
-          window.location.reload();
+          // window.location.reload();
         })
         .catch(error => {
           console.error('There was an error!', error);
