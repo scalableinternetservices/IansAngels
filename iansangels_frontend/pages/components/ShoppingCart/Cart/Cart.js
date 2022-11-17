@@ -119,7 +119,7 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
   }
 
   var requestOptions = {
-    method: 'PATCH',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(order)
   }; 
