@@ -189,6 +189,26 @@ export default function Pos() {
             }))
     }, [])
 
+    const deleteOrder = (i) => {
+      console.log("delete " + i);
+      var cur_name = orders_json[i]["attributes"]["person"]["username"];
+
+      const opts = {
+          method: 'DELETE',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+              "username": cur_name,
+          })
+      };
+
+      var rails_url = "http://localhost:3001";
+      var endpoint = "/POS/orders";
+      fetch(rails_url+endpoint, opts)
+          .then(response => {
+              window.location.reload();
+          })
+    }
+
   
     //var orders_json = getOrders();
 
@@ -286,6 +306,7 @@ export default function Pos() {
                       <th className="text-center">Order</th>
                       <th className="text-center">ETA</th>
                       <th className="text-center">Update ETA</th>
+                      <th className="text-center">Mark Order Completed</th>
                   </tr>
               </thead>
               <tbody>
@@ -304,6 +325,9 @@ export default function Pos() {
                               <td className="text-center" width="25%">{order["attributes"]["ETA"]}</td>
                               <td className="text-center" width="10%">
                                   <Button variant="secondary" onClick={(e) => {editETA(i)}}>Edit ETA</Button>
+                              </td>
+                              <td className="text-center" width="10%">
+                                  <Button variant="primary" onClick={(e) => {deleteOrder(i)}}>Mark Completed</Button>
                               </td>
                           </tr>
                       )
