@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   #will now display the menu and only the specific user's orders and completed orders
   get 'person/:id', to: 'person#show'
+  get 'POS/sales', to: 'inventory#sales'
 
   # show
   get 'kitchen/:id', to: 'orders#show'
