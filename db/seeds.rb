@@ -8,7 +8,7 @@ people = Person.create([
         password: "password",
         email: "Erwan_app@gmail.com",
         position: "client",
-        completedOrders: []
+        completedOrders: [["completed order test 1"], ["completed order test 2"]]
     },
     {
         username: "Rhys",
