@@ -15,7 +15,7 @@ import { slide as Menu } from "react-burger-menu";
 import MenuData from "../../Menu/MenuData";
 import Container from "react-bootstrap/Container";
 
-const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
+const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
 
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
 
@@ -104,6 +104,40 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
     console.log("Cart updated, price:" + price);
   }
 
+  var personInfo = {
+    "username": "Erwan",
+    // "password": "password",
+    // "email": "Erwan_app@gmail.com",
+    // "position": "client",
+    // "completedOrders": [],
+  }
+
+  var order = { 
+    "ETA": 0,
+    "username": "Erwan",
+    "itemNames": cart.title,
+  }
+
+  var requestOptions = {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
+  }; 
+
+  const submitOrder = (e) => {
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/POS/orders";
+    fetch(rails_url+endpoint,requestOptions) //fetch with no options does a get request to that endpoint
+        .then(response => {
+          console.log(response.json());
+          setOrderSent(true);
+          window.location.reload();
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+        });
+  }
+
   useEffect(() => {
     updateCartPrice();
   }, [cart]);
@@ -162,7 +196,8 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
         ))}
         <motion.h5 className="item-title">Total Price: {cartTotalPrice}</motion.h5>
         {/* <button onClick={routeChange}>Check Out</button> */}
-        <Nav.Link href="/client/checkout">Check Out</Nav.Link>
+        {/* <Nav.Link href="/client/checkout">Check Out</Nav.Link> */}
+        <button onClick={submitOrder}>Submit Order</button>
         </motion.div>
 
       </Menu>

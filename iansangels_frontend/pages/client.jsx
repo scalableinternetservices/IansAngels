@@ -30,17 +30,43 @@ function App() {
 
   const [menus_json, setMenus_json] = useState([]);
 
+  const [ETA, setETA] = useState(0);
+  const [orderSent, setOrderSent] = useState(false);
+
+  var order = { 
+    ETA: 0,
+    itemNames: cart,
+    person_id: 1,
+  }
+
   useEffect(() => {
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
     var endpoint = "/POS/menu";
     fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+      .then(response => 
+          response.json().then(data => {
+            setMenus_json(data["data"])
+            setLoading(false);
+            console.log(menus_json)
+            // MenuData = JSON.parse(menus_json); 
+      }))
+      .catch(error => {
+        console.error('There was an error!', error);
+      });
+  }, [])
+  
+
+  useEffect(() => {
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/POS/orders";
+    fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
         .then(response => 
             response.json().then(data => {
-              setMenus_json(data["data"])
-              setLoading(false);
-              console.log(menus_json)
-              // MenuData = JSON.parse(menus_json); 
+            setETA(data["data"])
         }))
+        .catch(error => {
+          console.error('There was an error!', error);
+        });
   }, [])
 
   const [loading, setLoading] = useState(true);
@@ -63,6 +89,7 @@ function App() {
         setCart={setCart}
         cartOpened={cartOpened}
         setCartOpened={setCartOpened}
+        setOrderSent={setOrderSent}
       />
 
       <div id={"page-wrap"}>
