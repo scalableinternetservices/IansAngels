@@ -12,7 +12,6 @@ const MenuAll = ({ all, items, cart , setCartOpened}) => {
     },
   };
 
-
   return (
     <>
       {all &&
