@@ -1,3 +1,5 @@
+require 'json'
+
 class InventoryController < ApplicationController
     def index
         inventory = Inventory.all
@@ -37,6 +39,8 @@ class InventoryController < ApplicationController
     def sales
         people = Person.all
         totalMoney = 0.00
+        mostPopularOrderCount = 0
+        mostPopularOrder = ""
         completedOrdersTotal = Hash.new
         inventoryUsedTotal = Hash.new
         for person in people
@@ -48,12 +52,15 @@ class InventoryController < ApplicationController
                         totalMoney += isOrder.price
                         if completedOrdersTotal.has_key?(isOrder.itemName)
                             completedOrdersTotal[isOrder.itemName] += 1;
+                            if completedOrdersTotal[isOrder.itemName] > mostPopularOrderCount
+                                mostPopularOrderCount = completedOrdersTotal[isOrder.itemName]
+                                mostPopularOrder = isOrder.itemName
+                            end
                         else
                             completedOrdersTotal[isOrder.itemName] = 1;
                         end
 
                         for ingredient in isOrder.ingredients
-                            #have to parse ingredient string because it currently is like "1 : 8 oz steak"
                             quantityAndFoodName = ingredient.split(':', -1)
                             quantityAndFoodName[0].strip!
                             quantityAndFoodName[1].strip!
@@ -75,28 +82,27 @@ class InventoryController < ApplicationController
         #total money made (grab price of each of completed orders)
         #total of each order (from completed orders of each user then)
         #total of each inventory item used (grab ingredients from each menu item)
-        #return everything as serialized JSON
         totalMoneyHash = Hash.new
-        totalMoneyHash["money"] = totalMoney
-        puts "\nCHECK VALUE BELOW\n"
-        #need to set precision on totalMoney
-        puts totalMoneyHash
-        puts "CHECK VALUE ABOVE\n"
+        totalMoneyHash["money"] = totalMoney.round(2)
+        mostPopularOrderHash = Hash.new
+        mostPopularOrderHash[mostPopularOrder] = mostPopularOrderCount
+        #print statements to console for debugging, will just comment them out for now
+        # puts "\nCHECK VALUE BELOW\n"
+        # puts totalMoneyHash
+        # puts "CHECK VALUE ABOVE\n"
 
-        puts "\nCHECK VALUE BELOW\n"
-        puts completedOrdersTotal
-        puts "CHECK VALUE ABOVE\n"
+        # puts "\nCHECK VALUE BELOW\n"
+        # puts completedOrdersTotal
+        # puts "CHECK VALUE ABOVE\n"
 
-        puts "\nCHECK VALUE BELOW\n"
-        puts inventoryUsedTotal
-        puts "CHECK VALUE ABOVE\n"
-        #data seems to be accurate, now need to figure out how to send it
-        #moneyData = InventorySerializer.new(totalMoney).serialized_json
-        #ordersData = InventorySerializer.new(completedOrdersTotal).serialized_json
-        #inventoryData = InventorySerializer.new(inventoryUsedTotal).serialized_json
-        #render json: moneyData + "\n\n" + ordersData + "\n\n" + inventoryData
-        inventory = Inventory.all
-        render json: InventorySerializer.new(inventory).serialized_json
+        # puts "\nCHECK VALUE BELOW\n"
+        # puts inventoryUsedTotal
+        # puts "CHECK VALUE ABOVE\n"
+
+        # puts "\nCHECK VALUE BELOW\n"
+        # puts mostPopularOrderHash
+        # puts "CHECK VALUE ABOVE\n"
+        render json: totalMoneyHash.to_json + "\n\n" + completedOrdersTotal.to_json + "\n\n" + inventoryUsedTotal.to_json + "\n\n" + mostPopularOrderHash.to_json
     end
 
     def update

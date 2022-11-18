@@ -28,6 +28,7 @@ Rails.application.routes.draw do
   post 'POS/inventory', to: 'inventory#create'
   post 'POS/menu', to: 'menu#create'
   post 'POS/orders', to: 'orders#create'
+  post 'createUser', to: 'person#create'
 
   #all patch requests tested by insomnia seem to work
   #when sending a patch request for an order, can simply use username of user instead of their ID

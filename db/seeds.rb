@@ -15,14 +15,14 @@ people = Person.create([
         password: "password",
         email: "Rhys_app@gmail.com",
         position: "Manager",
-        completedOrders: []
+        completedOrders: [["mashed potatoes and 8 oz steak"]]
     },
     {
         username: "Max",
         password: "password",
         email: "Max_app@gmail.com",
         position: "Cook",
-        completedOrders: []
+        completedOrders: [["Cookies and milk"], ["completed order that won't get counted in price"]]
     }
 ])
 
