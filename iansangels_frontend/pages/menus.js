@@ -172,9 +172,8 @@ export default function PosMenus() {
               <Navbar.Toggle aria-controls="basic-navbar-nav" />
               <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
-                <Nav.Link href="/pos">POS Home</Nav.Link>
-                <Nav.Link href="/salesreport">Sales Report</Nav.Link>
-                <Nav.Link href="/inventory">Inventory</Nav.Link>
+                <Nav.Link href="/client">Client</Nav.Link>
+                <Nav.Link href="/kitchen">Kitchen</Nav.Link>
                 <NavDropdown title="POS Pages" id="basic-nav-dropdown">
                   <NavDropdown.Item href="/pos">POS Home (Current Orders)</NavDropdown.Item>
                   <NavDropdown.Divider />
