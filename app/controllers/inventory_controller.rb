@@ -3,12 +3,16 @@ class InventoryController < ApplicationController
 
         # Since the inventory may not often change, it might be useful
         # to cache by day
-        time = Time.new
-        time = time.strftime("%Y-%m-%d")
-        puts(time)
-        inventory = Rails.cache.fetch(time) do
+
+        # The print is for illustrative purposes
+        # If we have already quiered for specific id, the inside of the block
+        # will not execute (id is cached)
+
+        # When entering block (not cached) Completed 200 OK in 109ms Views: 0.1ms | ActiveRecord: 15.6ms | Allocations: 34265)
+        # When skipping block (cached) Completed 200 OK in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms | Allocations: 385)
+        inventory = Rails.cache.fetch(:inventory, expires_in: 60.minutes) do
             print "I am another executing this block"
-            Inventory.all
+            InventorySerializer.new(Inventory.all).serialized_json
         end
         #menu = Menu.all
         #orders = Order.all
@@ -18,7 +22,7 @@ class InventoryController < ApplicationController
         #inventoryJSON = InventorySerializer.new(inventory).serialized_json
 
         #total = menuJSON + ordersJSON + inventoryJSON
-        inventory = InventorySerializer.new(inventory).serialized_json
+        #inventory = InventorySerializer.new(inventory).serialized_json
         render json: inventory
     end
 
@@ -29,10 +33,7 @@ class InventoryController < ApplicationController
     # When entering block (not cached) Completed 200 OK in 109ms Views: 0.1ms | ActiveRecord: 15.6ms | Allocations: 34265)
     # When skipping block (cached) Completed 200 OK in 2ms (Views: 0.2ms | ActiveRecord: 0.0ms | Allocations: 385)
     def show
-        inventory = Rails.cache.fetch(params[:id], expires_in: 10.minutes) do
-            print "I am executing this block"
-            Inventory.find_by(id: params[:id])
-        end
+        inventory = Inventory.find_by(id: params[:id])
         render json: InventorySerializer.new(inventory).serialized_json
     end
 

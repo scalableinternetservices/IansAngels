@@ -1,16 +1,17 @@
 class MenuController < ApplicationController
     def index
-        menu = Menu.all
+        #menu = Menu.all
+        menu = Rails.cache.fetch(:menu, expires_in: 60.minutes) do
+            print "I am another executing this block"
+            MenuSerializer.new(Menu.all).serialized_json
+        end
 
-        render json: MenuSerializer.new(menu).serialized_json
+        render json: menu
+        #render json: MenuSerializer.new(menu).serialized_json
     end
 
     def show
-        #menu = Menu.find_by(id: params[:id])
-        menu = Rails.cache.fetch(params[:id], expires_in: 10.minutes) do
-            print "I am executing this block"
-            Menu.find_by(id: params[:id])
-        end
+        menu = Menu.find_by(id: params[:id])
         render json: MenuSerializer.new(menu).serialized_json
     end
 

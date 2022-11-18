@@ -1,16 +1,17 @@
 class OrdersController < ApplicationController
     def index
-        orders = Order.all
+        #orders = Order.all
+        orders = Rails.cache.fetch(:orders, expires_in: 60.minutes) do
+            print "I am executing this block"
+            OrderSerializer.new(Order.all).serialized_json
+        end
 
-        render json: OrderSerializer.new(orders).serialized_json
+        #render json: OrderSerializer.new(orders).serialized_json
+        render json: orders
     end
 
     def show
-        #order = Order.find_by(id: params[:id])
-        order = Rails.cache.fetch(params[:id], expires_in: 10.minutes) do
-            print "I am executing this block"
-            Order.find_by(id: params[:id])
-        end
+        order = Order.find_by(id: params[:id])
         render json: OrderSerializer.new(order).serialized_json
     end
 
