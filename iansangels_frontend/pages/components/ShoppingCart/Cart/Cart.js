@@ -1,9 +1,11 @@
 import style from "./Cart.module.css";
 import React, { useEffect, useState } from "react";
 import { css, jsx, Global } from "@emotion/react";
-import { useNavigate } from "react-router-dom";
 import Nav from 'react-bootstrap/Nav';
-
+import Link from "next/link";
+import { useRouter } from "next/router";
+import Button from '@mui/material/Button';
+// import Button from 'components/CustomButtons/Button.js';
 
 // import { ReactComponent as Right } from "../../Resources/image/arrowRight.svg";
 // import { ReactComponent as Cross } from "../../Resources/image/cross.svg";
@@ -15,9 +17,10 @@ import { slide as Menu } from "react-burger-menu";
 import MenuData from "../../Menu/MenuData";
 import Container from "react-bootstrap/Container";
 
-const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
+const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
 
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
+  const [username, setUsername] = useState("");
 
   const itemContainer = {
     hidden: { y: 20, opacity: 0 },
@@ -104,6 +107,72 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
     console.log("Cart updated, price:" + price);
   }
 
+  var personInfo = {
+    "username": "Erwan",
+    // "password": "password",
+    // "email": "Erwan_app@gmail.com",
+    // "position": "client",
+    // "completedOrders": [],
+  }
+
+  var order = { 
+    "ETA": 0,
+    "username": username,
+    "itemNames": [],
+  }
+
+  var requestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(order)
+  }; 
+
+  const submitOrder = () => {
+    console.log("Submitting cart" + cart);
+    order.itemNames = cart.map(a => a.title);
+    requestOptions.body = JSON.stringify(order);
+
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/POS/orders";
+    fetch(rails_url+endpoint,requestOptions) //fetch with no options does a get request to that endpoint
+        .then(response => {
+          console.log(response.json());
+          setOrderSent(true);
+          // window.location.reload();
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+        });
+      
+    
+  }
+
+
+  const SubmitOrderButton = React.forwardRef(({ onClick, href }, ref) => {
+
+    console.log("Submitting cart" + cart);
+    order.itemNames = cart.map(a => a.title);
+    requestOptions.body = JSON.stringify(order);
+
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/POS/orders";
+    fetch(rails_url+endpoint,requestOptions) //fetch with no options does a get request to that endpoint
+        .then(response => {
+          console.log(response.json());
+          setOrderSent(true);
+          // window.location.reload();
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+        });
+    
+    return (
+      <a href={href} onClick={onClick} ref={ref}>
+        Submit Order
+      </a>
+    )
+  })
+
   useEffect(() => {
     updateCartPrice();
   }, [cart]);
@@ -115,15 +184,11 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
     },
   };
 
-  // let navigate = useNavigate(); 
-  // const routeChange = () =>{ 
-  //   let path = `newPath`; 
-  //   navigate(path);
-  // }
-
+  const handleSubmit = (e) => {
+    setUsername(e.target.value);
+  };
 
   return(
-
     <motion.div 
       className="MenuItems container"
       variants={container}
@@ -143,6 +208,7 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
 
         <h3>Cart</h3>
         <motion.div>
+        
         {cart.map((item, i) => (
           <motion.div
             className="menu-items"
@@ -162,12 +228,48 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened}) =>{
         ))}
         <motion.h5 className="item-title">Total Price: {cartTotalPrice}</motion.h5>
         {/* <button onClick={routeChange}>Check Out</button> */}
-        <Nav.Link href="/client/checkout">Check Out</Nav.Link>
-        </motion.div>
+        {/* <Nav.Link href="/client/checkout">Check Out</Nav.Link> */}
+        {/* <button onClick={submitOrder}>Submit Order</button> */}
+        <Link 
+          href={{
+            pathname:"/client/[name]", 
+            query: {
+              name: order.username,
+              cart: cart
+            },
+          }}
+          // href="client/ETA"
+          passHref legacyBehavior
+        >
+          {/* <SubmitOrderButton /> */}
+          {/* <form onSubmit={()=> submitOrder()}>
+            <label>
+              Name:
+              <input type="text" value={order.username} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form> */}
+          <Button variant="contained" onClick={()=> submitOrder()}>
+            Submit Order
+          </Button>
+        </Link>
 
+        <form onSubmit={()=> submitOrder()}>
+            <label>
+              Name:
+              <input type="text" value={order.username} onChange={handleSubmit}/>
+            </label>
+            <input type="submit" value="Save" />
+          </form>
+
+        
+        </motion.div>
+        
       </Menu>
 
     </motion.div>
+
+    
      
   );
 };
