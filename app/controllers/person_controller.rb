@@ -16,7 +16,13 @@ class PersonController < ApplicationController
     end
 
     def create
-        raise ActionController::RoutingError.new('Not Found'), status: 404
+        person = Person.new(person_params)
+
+        if person.save
+            render json: PersonSerializer.new(person).serialized_json
+        else
+            raise ActionController::RoutingError.new('Not Found'), status: 404
+        end
     end
 
     def update
