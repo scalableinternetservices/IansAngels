@@ -23,7 +23,7 @@ const MenuAll = ({ all, items, cart , setCartOpened}) => {
             transition={{ delay: i * 0.2 }}
           >
             <img src={item.attributes.imageURL} alt="food burger" />
-          {console.log(item)}
+          
             <motion.div className="item-content">
               <motion.div className="item-title-box">
                 <motion.h5 className="item-title">{item.attributes.itemName}</motion.h5>

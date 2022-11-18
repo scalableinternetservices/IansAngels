@@ -23,7 +23,7 @@ export default function Home() {
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
               <Nav.Link href="/">Home</Nav.Link>
-              <Nav.Link href="/client">Client</Nav.Link>
+              <Nav.Link href="/client/client">Client</Nav.Link>
               <Nav.Link href="/pos">POS</Nav.Link>
               <Nav.Link href="/kitchen">Kitchen</Nav.Link>
             </Nav>
@@ -39,7 +39,7 @@ export default function Home() {
           <Container>
             <Row>
               <Col className="text-center">
-                <Link href="/client">
+                <Link href="/client/client">
                   <Button variant="primary">Client Page</Button>
                 </Link>
               </Col>
