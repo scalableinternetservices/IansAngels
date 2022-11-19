@@ -10,4 +10,7 @@ WORKDIR /app
 COPY Gemfile Gemfile.lock /app/
 RUN bundle install
 
+ARG RAILS_MASTER_KEY
+RUN RAILS_MASTER_KEY=${RAILS_MASTER_KEY} RAILS_ENV=production bundle exec rails assets:precompile
+
 CMD ["/bin/bash"]

@@ -8,23 +8,23 @@ people = Person.create([
         password: "password",
         email: "Erwan_app@gmail.com",
         position: "client",
-        completedOrders: []
+        completedOrders: [["mashed potatoes and 8 oz steak"], ["eggs and 8 oz steak"]]
     },
     {
         username: "Rhys",
         password: "password",
         email: "Rhys_app@gmail.com",
         position: "Manager",
-        completedOrders: []
+        completedOrders: [["mashed potatoes and 8 oz steak"]]
     },
     {
         username: "Max",
         password: "password",
         email: "Max_app@gmail.com",
         position: "Cook",
-        completedOrders: []
+        completedOrders: [["Cookies and milk"], ["completed order that won't get counted in price"]]
     }
-]) if Person.count == 0
+])
 
 inventory = Inventory.create([
     {
@@ -47,7 +47,7 @@ inventory = Inventory.create([
         foodName: "cookies",
         quantity: 150
     }
-]) if Inventory.count == 0
+])
 
 menu = Menu.create([
     {
@@ -77,7 +77,7 @@ menu = Menu.create([
         imageURL: "https://sites.miis.edu/graduatewritingcenter/files/2013/09/MilkandCookies.jpg",
         ingredients: ["2 : 1 cup milk", "10 : cookies"]
     }
-]) if Menu.count == 0
+])
 
 orders = Order.create([
     {
@@ -90,6 +90,6 @@ orders = Order.create([
         person: people.second,
         itemNames: ["scrambled cage free eggs and 8 oz steak", "Cookies and milk"]
     }
-]) if Order.count == 0
+])
 
 p "Created seed data for the db"
