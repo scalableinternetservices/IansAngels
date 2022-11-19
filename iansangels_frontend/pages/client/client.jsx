@@ -15,7 +15,6 @@ import Container from "react-bootstrap/Container";
 // import { slide as Menu } from "react-burger-menu";
 import Cart from "../components/ShoppingCart/Cart/Cart"
 
-import { motion } from "framer-motion";
 
 // function App() {
 export default function client() {
@@ -48,6 +47,8 @@ export default function client() {
         console.error('There was an error!', error);
       });
   }, [])
+
+  
   
 
   // useEffect(() => {

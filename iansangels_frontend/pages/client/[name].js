@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { css, jsx, Global } from "@emotion/react";
 import Nav from 'react-bootstrap/Nav';
 import Link from "next/link";
@@ -17,8 +17,26 @@ export  const getServerSideProps= (context)=> {
     }
 }
 
-const ETA = (props) => {
+export function useInterval(callback, delay) {
+    const savedCallback = useRef() ;
+    useEffect(() => { 
+        savedCallback.current = callback;
+    }, [callback]);
+    // Set up the interval.
+    useEffect(() => {
+        function tick() {
+            savedCallback.current();
+        }
+        if (delay !== null) {
+            const id = setInterval(tick, delay);
+            return () => {
+                clearInterval(id);
+            }
+        }
+    }, [callback, delay]);
+}
 
+const ETA = (props) => {
 
 
     const [orders_json, setOrders_json] = useState([]);
@@ -95,10 +113,14 @@ const ETA = (props) => {
         },
       };
 
+    useInterval(async () => {
+        fetchETA();
+    }, 2000)
 
-    useEffect(() => {
+    const fetchETA = () => {
         var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
         var endpoint = "/POS/orders";
+        
         fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
             .then(response => 
                 response.json().then(data => {
@@ -129,7 +151,7 @@ const ETA = (props) => {
                     }
                     // console.log("ETA: "+ETA);
             }))
-    }, [])
+    }
 
     const handleClose = () => setModalOpen(false);
     const handleShow = () => setModalOpen(true);
