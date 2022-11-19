@@ -79,13 +79,7 @@ class InventoryController < ApplicationController
                 end  
              end
         end
-        #total money made (grab price of each of completed orders)
-        #total of each order (from completed orders of each user then)
-        #total of each inventory item used (grab ingredients from each menu item)
-        totalMoneyHash = Hash.new
-        totalMoneyHash["money"] = totalMoney.round(2)
-        mostPopularOrderHash = Hash.new
-        mostPopularOrderHash[mostPopularOrder] = mostPopularOrderCount
+        
         #print statements to console for debugging, will just comment them out for now
         # puts "\nCHECK VALUE BELOW\n"
         # puts totalMoneyHash
@@ -102,7 +96,32 @@ class InventoryController < ApplicationController
         # puts "\nCHECK VALUE BELOW\n"
         # puts mostPopularOrderHash
         # puts "CHECK VALUE ABOVE\n"
-        render json: totalMoneyHash.to_json + "\n\n" + completedOrdersTotal.to_json + "\n\n" + inventoryUsedTotal.to_json + "\n\n" + mostPopularOrderHash.to_json
+        sales = Hash.new
+        sales["totalMoney"] = totalMoney.round(2)
+        sales["mostPopularItem"] = mostPopularOrder
+        sales["mostPopularItemCount"] = mostPopularOrderCount
+
+        ordersArray = Array.new
+
+        completedOrdersTotal.each do |key, value|
+             arrayElement = Hash.new
+             arrayElement["order"] = key
+             arrayElement["amount"] = value
+             ordersArray.push(arrayElement)
+        end
+
+        inventoryArray = Array.new
+
+        inventoryUsedTotal.each do |key, value|
+            arrayElement = Hash.new
+            arrayElement["ingredient"] = key
+            arrayElement["amount"] = value
+            inventoryArray.push(arrayElement)
+       end
+
+        sales["totalOrders"] = ordersArray
+        sales["totalIngredients"] = inventoryArray
+        render json: sales
     end
 
     def update
