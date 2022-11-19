@@ -14,7 +14,29 @@ import NavDropdown from 'react-bootstrap/NavDropdown';
 
 
 export default function PosSales() {
+    const [sales_json, setSales_json] = useState([]);
+
+    useEffect(() => {
+        var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+        var endpoint = "/POS/sales";
+        fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+            .then(response => 
+                response.json().then(data => {
+                    setSales_json(data)
+                    setLoading(false);
+            }))
+    }, [])
+
     //var orders_json = getOrders();
+
+    const [loading, setLoading] = useState(true);
+
+    if(loading){
+      return <h1>Loading</h1>
+    }
+    /*else{
+      console.log(sales_json);
+    }*/
   
   
     return (
@@ -42,8 +64,33 @@ export default function PosSales() {
           <h1 className="text-center">POS</h1>
         </div>
         <br/>
-        <div className="m-5">
-          <h2>Sales Report</h2>
+        <div className="m-5 border border-dark">
+          <h1 className="text-center">Sales Report</h1>
+          <br/>
+          <div className="row">
+              <div className="col-3 text-center">
+                  <h3>Total Sales: ${sales_json["totalMoney"]}</h3>
+              </div>
+              <div className="col-3 text-center">
+                  <h3>Top Selling Item: "{sales_json["mostPopularItem"]}" ({sales_json["mostPopularItemCount"]} total sales)</h3>
+              </div>
+              <div className="col-3 text-center">
+                  <h3>Sales For All Items:</h3>
+                  <ul>
+                    {sales_json["totalOrders"].map((item) => {
+                      return <li>"{item["order"]}":   {item["amount"]} total sales</li>;
+                    })}
+                  </ul>
+              </div>
+              <div className="col-3 text-center">
+                  <h3>Total Ingredients Used:</h3>
+                  <ul>
+                    {sales_json["totalIngredients"].map((item) => {
+                      return <li>"{item["ingredient"]}":   {item["amount"]} total used</li>;
+                    })}
+                  </ul>
+              </div>
+          </div>
         </div>
         <br/>
       </div>
