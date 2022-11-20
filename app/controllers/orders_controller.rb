@@ -199,7 +199,7 @@ class OrdersController < ApplicationController
                             print "did not successfully update " + inventoryItem.foodName
                         end
 
-                        print "Sorry, there are not enough ingredients at the moment to order the amount of this item you requested"
+                        print "Sorry, there are not enough ingredients at the moment to order the amount of this item you requested. We ordered as many of the desired items as possible"
                     else
                         #can't order
                         print "Sorry, there are not enough ingredients at the moment to order this item"
