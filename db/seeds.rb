@@ -88,7 +88,7 @@ orders = Order.create([
     {
         ETA: 10,
         person: people.second,
-        itemNames: ["scrambled cage free eggs and 8 oz steak", "Cookies and milk"]
+        itemNames: ["eggs and 8 oz steak", "Cookies and milk"]
     }
 ])
 
