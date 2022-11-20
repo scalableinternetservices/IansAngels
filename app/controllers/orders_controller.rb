@@ -79,6 +79,13 @@ class OrdersController < ApplicationController
     end
 
     def update
+        #UPDATE THIS PART TO ALSO REMOVE/ADD INGREDIENTS BASED ON WHAT PARTS OF THE ORDER ARE CANCELLED
+        #NEED TO ALSO START THINKING ABOUT THE CAN ORDER FIELD
+        #MY THOUGHTS:
+        #show up all menu items that can be ordered initially
+        #check through the ones that are marked as not being able to be ordered from clients ordering
+        #check if there are now enough ingredients to display them
+        #if there are add them to the menu, if not, keep them there
         personData = Person.find_by(username: params[:username])
 
         order = Order.find_by(person_id: personData.id)
