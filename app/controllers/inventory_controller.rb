@@ -1,3 +1,5 @@
+require 'json'
+
 class InventoryController < ApplicationController
     def index
         inventory = Inventory.all
@@ -34,6 +36,94 @@ class InventoryController < ApplicationController
         end
     end
 
+    def sales
+        people = Person.all
+        totalMoney = 0.00
+        mostPopularOrderCount = 0
+        mostPopularOrder = ""
+        completedOrdersTotal = Hash.new
+        inventoryUsedTotal = Hash.new
+        for person in people
+             for order in person.completedOrders
+                for menuItem in order
+                    isOrder = Menu.find_by(itemName: menuItem)
+
+                    if isOrder != nil
+                        totalMoney += isOrder.price
+                        if completedOrdersTotal.has_key?(isOrder.itemName)
+                            completedOrdersTotal[isOrder.itemName] += 1;
+                            if completedOrdersTotal[isOrder.itemName] > mostPopularOrderCount
+                                mostPopularOrderCount = completedOrdersTotal[isOrder.itemName]
+                                mostPopularOrder = isOrder.itemName
+                            end
+                        else
+                            completedOrdersTotal[isOrder.itemName] = 1;
+                        end
+
+                        for ingredient in isOrder.ingredients
+                            quantityAndFoodName = ingredient.split(':', -1)
+                            quantityAndFoodName[0].strip!
+                            quantityAndFoodName[1].strip!
+                            qty = quantityAndFoodName[0].to_i
+                            food = quantityAndFoodName[1]
+                            print qty, food
+                            if inventoryUsedTotal.has_key?(food)
+                                inventoryUsedTotal[food] += qty;
+                            else
+                                inventoryUsedTotal[food] = qty;
+                            end
+                        end
+                    else
+                        print "this order is not part of the menu"
+                    end
+                end  
+             end
+        end
+        
+        #print statements to console for debugging, will just comment them out for now
+        # puts "\nCHECK VALUE BELOW\n"
+        # puts totalMoneyHash
+        # puts "CHECK VALUE ABOVE\n"
+
+        # puts "\nCHECK VALUE BELOW\n"
+        # puts completedOrdersTotal
+        # puts "CHECK VALUE ABOVE\n"
+
+        # puts "\nCHECK VALUE BELOW\n"
+        # puts inventoryUsedTotal
+        # puts "CHECK VALUE ABOVE\n"
+
+        # puts "\nCHECK VALUE BELOW\n"
+        # puts mostPopularOrderHash
+        # puts "CHECK VALUE ABOVE\n"
+        sales = Hash.new
+        sales["totalMoney"] = totalMoney.round(2)
+        sales["mostPopularItem"] = mostPopularOrder
+        sales["mostPopularItemCount"] = mostPopularOrderCount
+
+        ordersArray = Array.new
+
+        completedOrdersTotal.each do |key, value|
+             arrayElement = Hash.new
+             arrayElement["order"] = key
+             arrayElement["amount"] = value
+             ordersArray.push(arrayElement)
+        end
+
+        inventoryArray = Array.new
+
+        inventoryUsedTotal.each do |key, value|
+            arrayElement = Hash.new
+            arrayElement["ingredient"] = key
+            arrayElement["amount"] = value
+            inventoryArray.push(arrayElement)
+       end
+
+        sales["totalOrders"] = ordersArray
+        sales["totalIngredients"] = inventoryArray
+        render json: sales
+    end
+
     def update
         inventory = Inventory.find_by(foodName: params[:foodName])
 
@@ -58,5 +148,9 @@ class InventoryController < ApplicationController
 
     def inventory_params
         params.require(:inventory).permit(:foodName, :quantity)
+    end
+
+    def menu_params
+        params.permit(:canOrder, :price, :itemName, :description, :category, :imageURL, :ingredients => [])
     end
 end
