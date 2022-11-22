@@ -34,9 +34,9 @@ class OrdersController < ApplicationController
         ordersToDelete = Array.new
 
         for item in order.itemNames
-            curOrder = Menu.find_by(itemName: item)
+            curItem = Menu.find_by(itemName: item)
             
-            for ingredient in curOrder.ingredients
+            for ingredient in curItem.ingredients
                 quantityAndFoodName = ingredient.split(':', -1)
                 quantityAndFoodName[0].strip!
                 quantityAndFoodName[1].strip!
@@ -64,6 +64,14 @@ class OrdersController < ApplicationController
                     #can't order
                     print "Sorry, there are not enough ingredients at the moment to order this item"
                     ordersToDelete.push(item)
+                    curItem.canOrder = false
+
+                    if curItem.update(menu_params)
+                        print curItem.itemName + " cannot be ordered as of now"
+                    else
+                        print "something went wrong in updating the order status of " + curItem.itemName
+                    end
+
                     break
                 end
             end
@@ -199,11 +207,27 @@ class OrdersController < ApplicationController
                             print "did not successfully update " + inventoryItem.foodName
                         end
 
+                        curItem.canOrder = false
+
+                        if curItem.update(menu_params)
+                            print curItem.itemName + " cannot be ordered as of now"
+                        else
+                            print "something went wrong in updating the order status of " + curItem.itemName
+                        end
+
                         print "Sorry, there are not enough ingredients at the moment to order the amount of this item you requested. We ordered as many of the desired items as possible"
                     else
                         #can't order
                         print "Sorry, there are not enough ingredients at the moment to order this item"
                         ordersToDelete[key] = value
+                        curItem.canOrder = false
+
+                        if curItem.update(menu_params)
+                            print curItem.itemName + " cannot be ordered as of now"
+                        else
+                            print "something went wrong in updating the order status of " + curItem.itemName
+                        end
+
                         break
                     end
                 end
@@ -255,5 +279,9 @@ class OrdersController < ApplicationController
 
     def inventory_params
         params.permit(:foodName, :quantity)
+    end
+
+    def menu_params
+        params.permit(:canOrder, :price, :itemName, :description, :category, :imageURL, :ingredients => [])
     end
 end

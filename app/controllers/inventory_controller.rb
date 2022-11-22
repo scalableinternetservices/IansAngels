@@ -95,6 +95,7 @@ class InventoryController < ApplicationController
 
         # puts "\nCHECK VALUE BELOW\n"
         # puts mostPopularOrderHash
+        
         # puts "CHECK VALUE ABOVE\n"
         sales = Hash.new
         sales["totalMoney"] = totalMoney.round(2)
