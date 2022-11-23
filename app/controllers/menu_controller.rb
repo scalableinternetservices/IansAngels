@@ -18,7 +18,6 @@ class MenuController < ApplicationController
                 if inventoryAmount < qty
                     print "This item still does not have enough ingredients to be ordered again!"
                     canOrderNow = false
-                    break
                 end
             end
 

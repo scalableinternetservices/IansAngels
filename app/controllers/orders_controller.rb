@@ -31,10 +31,30 @@ class OrdersController < ApplicationController
         order.person = personData
 
         #need to make sure that there are enough ingredients to use for the order
-        ordersToDelete = Array.new
+        ordersToAdd = Array.new
 
         for item in order.itemNames
             curItem = Menu.find_by(itemName: item)
+
+            maxAmountOrder = 2 << 63
+
+            for ingredient in curItem.ingredients
+                quantityAndFoodName = ingredient.split(':', -1)
+                quantityAndFoodName[0].strip!
+                quantityAndFoodName[1].strip!
+                qty = quantityAndFoodName[0].to_i
+                food = quantityAndFoodName[1]
+
+                inventoryItem = Inventory.find_by(foodName: food)
+                inventoryFood = inventoryItem.foodName
+                inventoryAmount = inventoryItem.quantity
+
+                maxAmountOrder = [maxAmountOrder, (inventoryAmount / qty).to_i].min
+            end
+
+            if maxAmountOrder <= 0
+                order.itemNames.delete_at(order.itemNames.index(item))
+            end
             
             for ingredient in curItem.ingredients
                 quantityAndFoodName = ingredient.split(':', -1)
@@ -46,7 +66,8 @@ class OrdersController < ApplicationController
                 inventoryItem = Inventory.find_by(foodName: food)
                 inventoryFood = inventoryItem.foodName
                 inventoryAmount = inventoryItem.quantity
-                if inventoryAmount - qty >= 0
+
+                if maxAmountOrder > 0
                     #can order
                     inventoryItem.quantity -= qty
 
@@ -63,7 +84,6 @@ class OrdersController < ApplicationController
                 else
                     #can't order
                     print "Sorry, there are not enough ingredients at the moment to order this item"
-                    ordersToDelete.push(item)
                     curItem.canOrder = false
 
                     if curItem.update(menu_params)
@@ -71,14 +91,8 @@ class OrdersController < ApplicationController
                     else
                         print "something went wrong in updating the order status of " + curItem.itemName
                     end
-
-                    break
                 end
             end
-        end
-
-        for item in ordersToDelete
-            order.itemNames.delete(item)
         end
 
         if order.save
@@ -135,6 +149,11 @@ class OrdersController < ApplicationController
             end
         end
 
+        #need to sort to let the dropped orders restock the inventory First
+        #before adding in extra orders
+        #update.sort_by {|_key, value| value}.to_h
+        update = update.to_a.sort_by(&:last).to_h
+
         print "BELOW WILL BE UPDATE\n\n"
         print current
         print "\n"
@@ -146,9 +165,13 @@ class OrdersController < ApplicationController
         for (key, value) in update
             curItem = Menu.find_by(itemName: key)
 
+            #maxAmountOrder is the maximum amount of a menu item you can currently order
+            #given the ingredients in the inventory and the amount of ingredients needed to make the order
+            maxAmountOrder = 2 << 63
+
             if value < 0
                 for i in 0...-value
-                    order.itemNames.delete(curItem.itemName)
+                    order.itemNames.delete_at(order.itemNames.index(key))
                 end
             end
             
@@ -163,11 +186,7 @@ class OrdersController < ApplicationController
                 inventoryFood = inventoryItem.foodName
                 inventoryAmount = inventoryItem.quantity
 
-                #if item was removed from current order, need to restore ingredients in inventory
-                if value == 0
-                    puts "\n\nNO CHANGE, SKIPPING\n\n"
-                    next
-                elsif value <= 0
+                if value < 0
                     inventoryItem.quantity += -value * qty
 
                     puts "\nCHECK VALUE BELOW\n"
@@ -180,44 +199,61 @@ class OrdersController < ApplicationController
                     else
                         print "did not successfully update " + inventoryItem.foodName
                     end
+                end
+
+                maxAmountOrder = [maxAmountOrder, (inventoryAmount / qty).to_i].min
+            end
+
+            #if item was removed from current order, need to restore ingredients in inventory
+            #this is not affected by the ingredient stuff you were worried about
+            for ingredient in curItem.ingredients
+                quantityAndFoodName = ingredient.split(':', -1)
+                quantityAndFoodName[0].strip!
+                quantityAndFoodName[1].strip!
+                qty = quantityAndFoodName[0].to_i
+                food = quantityAndFoodName[1]
+
+                inventoryItem = Inventory.find_by(foodName: food)
+                inventoryFood = inventoryItem.foodName
+                inventoryAmount = inventoryItem.quantity
+
+                if value <= 0
+                    puts "\n\nNO CHANGE, SKIPPING\n\n"
+                    next
+                #here, the amount of updated orders is a net positive, you do care about removing ingredients.
+                #so make sure to only order a max of maxAmountOrder calculated from earlier
                 else
-                    if inventoryAmount - (value * qty) >= 0
+                    if maxAmountOrder - value >= 0
                         #can order
                         inventoryItem.quantity -= (value * qty)
-    
+
                         puts "\nCHECK VALUE BELOW\n"
                         puts inventoryItem.foodName
                         puts inventoryItem.quantity
                         puts "CHECK VALUE ABOVE\n"
 
                         ordersToAdd[key] = value
-    
+
                         if inventoryItem.update(inventory_params)
                             print "successfully updated " + inventoryItem.foodName
                         else
                             print "did not successfully update " + inventoryItem.foodName
                         end
-                    elsif inventoryAmount - qty >= 0
+                    elsif value > maxAmountOrder && maxAmountOrder > 0
                         #can order a limited amount of that certain item
-                        amountAvailable = (inventoryItem.quantity / qty).to_i
+                        inventoryItem.quantity -= (maxAmountOrder * qty)
 
-                        inventoryItem.quantity -= (amountAvailable * qty)
-    
                         puts "\nCHECK VALUE BELOW\n"
                         puts inventoryItem.foodName
                         puts inventoryItem.quantity
                         puts "CHECK VALUE ABOVE\n"
                         
-                        if ordersToAdd.has_key?(key)
-                            ordersToAdd[key] = [ordersToAdd[key], amountAvailable].min
-                        else
-                            ordersToAdd[key] = amountAvailable
-                        end
+                        ordersToAdd[key] = maxAmountOrder
 
                         print "AMOUNT AVAILABLE\n\n"
-                        print (amountAvailable)
+                        print (maxAmountOrder)
                         print "\n\nAMOUNT AVAILABLE"
-    
+
                         if inventoryItem.update(inventory_params)
                             print "successfully updated " + inventoryItem.foodName
                         else
@@ -233,7 +269,6 @@ class OrdersController < ApplicationController
                         end
 
                         print "Sorry, there are not enough ingredients at the moment to order the amount of this item you requested. We ordered as many of the desired items as possible"
-                        #break
                     else
                         #can't order
                         print "Sorry, there are not enough ingredients at the moment to order this item"
@@ -244,8 +279,6 @@ class OrdersController < ApplicationController
                         else
                             print "something went wrong in updating the order status of " + curItem.itemName
                         end
-
-                        break
                     end
                 end
             end
