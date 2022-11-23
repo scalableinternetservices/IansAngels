@@ -29,11 +29,11 @@ people = Person.create([
 inventory = Inventory.create([
     {
         foodName: "8 oz steak",
-        quantity: 0
+        quantity: 3
     },
     {
         foodName: "potatoes",
-        quantity: 100
+        quantity: 6
     },
     {
         foodName: "1 cup milk",

@@ -141,10 +141,16 @@ class OrdersController < ApplicationController
         print update
         print "\n\nABOVE WILL BE UPDATE\n\n"
 
-        ordersToDelete = Hash.new
+        ordersToAdd = Hash.new
 
         for (key, value) in update
             curItem = Menu.find_by(itemName: key)
+
+            if value < 0
+                for i in 0...-value
+                    order.itemNames.delete(curItem.itemName)
+                end
+            end
             
             for ingredient in curItem.ingredients
                 quantityAndFoodName = ingredient.split(':', -1)
@@ -183,6 +189,8 @@ class OrdersController < ApplicationController
                         puts inventoryItem.foodName
                         puts inventoryItem.quantity
                         puts "CHECK VALUE ABOVE\n"
+
+                        ordersToAdd[key] = value
     
                         if inventoryItem.update(inventory_params)
                             print "successfully updated " + inventoryItem.foodName
@@ -192,14 +200,23 @@ class OrdersController < ApplicationController
                     elsif inventoryAmount - qty >= 0
                         #can order a limited amount of that certain item
                         amountAvailable = (inventoryItem.quantity / qty).to_i
+
                         inventoryItem.quantity -= (amountAvailable * qty)
     
                         puts "\nCHECK VALUE BELOW\n"
                         puts inventoryItem.foodName
                         puts inventoryItem.quantity
                         puts "CHECK VALUE ABOVE\n"
+                        
+                        if ordersToAdd.has_key?(key)
+                            ordersToAdd[key] = [ordersToAdd[key], amountAvailable].min
+                        else
+                            ordersToAdd[key] = amountAvailable
+                        end
 
-                        ordersToDelete[key] = value - amountAvailable
+                        print "AMOUNT AVAILABLE\n\n"
+                        print (amountAvailable)
+                        print "\n\nAMOUNT AVAILABLE"
     
                         if inventoryItem.update(inventory_params)
                             print "successfully updated " + inventoryItem.foodName
@@ -216,10 +233,10 @@ class OrdersController < ApplicationController
                         end
 
                         print "Sorry, there are not enough ingredients at the moment to order the amount of this item you requested. We ordered as many of the desired items as possible"
+                        #break
                     else
                         #can't order
                         print "Sorry, there are not enough ingredients at the moment to order this item"
-                        ordersToDelete[key] = value
                         curItem.canOrder = false
 
                         if curItem.update(menu_params)
@@ -234,13 +251,23 @@ class OrdersController < ApplicationController
             end
         end
 
-        for (key, value) in ordersToDelete
+        print "BEFORE\n\n"
+        print order.itemNames
+        print "\n\nBEFORE"
+
+        print ordersToAdd
+
+        for (key, value) in ordersToAdd
             for i in 0...value do
-                order.itemNames.delete(key)
+                order.itemNames.append(key)
             end
         end
+        
+        print "AFTER\n\n"
+        print order.itemNames
+        print "\n\nAFTER"
 
-        if order.update(order_params)
+        if order.save
             render json: OrderSerializer.new(order).serialized_json
         else
             raise ActionController::RoutingError.new('Not Found'), status: 404
