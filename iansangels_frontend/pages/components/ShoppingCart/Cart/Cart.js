@@ -16,11 +16,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { slide as Menu } from "react-burger-menu";
 import MenuData from "../../Menu/MenuData";
 import Container from "react-bootstrap/Container";
+import { create } from "@mui/material/styles/createTransitions";
+import Modal from 'react-bootstrap/Modal';
+
 
 const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
 
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
   const [username, setUsername] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
 
   const itemContainer = {
     hidden: { y: 20, opacity: 0 },
@@ -107,21 +111,14 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     console.log("Cart updated, price:" + price);
   }
 
-  var personInfo = {
-    "username": "Erwan",
-    // "password": "password",
-    // "email": "Erwan_app@gmail.com",
-    // "position": "client",
-    // "completedOrders": [],
-  }
-
   var order = { 
     "ETA": 0,
     "username": username,
     "itemNames": [],
   }
 
-  var requestOptions = {
+
+  var orderRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(order)
@@ -130,14 +127,22 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
   const submitOrder = () => {
     console.log("Submitting cart" + cart);
     order.itemNames = cart.map(a => a.title);
-    requestOptions.body = JSON.stringify(order);
+    orderRequestOptions.body = JSON.stringify(order);
+
+
+    if(!checkUserExist(order.username)){
+      console.log("user not exist")
+      createUser();
+    }else {
+      console.log("user existed!")
+      setModalOpen(true);
+    }
 
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
     var endpoint = "/POS/orders";
-    fetch(rails_url+endpoint,requestOptions) //fetch with no options does a get request to that endpoint
+    fetch(rails_url+endpoint,orderRequestOptions) //fetch with no options does a get request to that endpoint
         .then(response => {
           console.log(response.json());
-          setOrderSent(true);
           // window.location.reload();
         })
         .catch(error => {
@@ -147,31 +152,57 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     
   }
 
+  const checkUserExist = () => {
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/person";
+    fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+        .then(response => {
+          response.json().then(data => {
+            console.log(data["data"]);
+            data["data"].map((person) => {
+              if(person.attributes.username == order.username){
+                return true;
+              }
+            })
+            return false;
+          }
+          )
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+        });
+  }
 
-  const SubmitOrderButton = React.forwardRef(({ onClick, href }, ref) => {
+  var createPersonRequestOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: ""
+  }; 
 
-    console.log("Submitting cart" + cart);
-    order.itemNames = cart.map(a => a.title);
-    requestOptions.body = JSON.stringify(order);
+  const createUser = () => {
+    createPersonRequestOptions.body = JSON.stringify({
+      "username": order.username,
+      "password": "password",
+      "email": "random_User_app@gmail.com",
+      "position": "client",
+      "completedOrders": []
+    });
+    console.log("creating user:" + order.username);
+    console.log(createPersonRequestOptions);
+
 
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-    var endpoint = "/POS/orders";
-    fetch(rails_url+endpoint,requestOptions) //fetch with no options does a get request to that endpoint
+    var endpoint = "/createUser";
+    fetch(rails_url+endpoint,createPersonRequestOptions) //fetch with no options does a get request to that endpoint
         .then(response => {
           console.log(response.json());
-          setOrderSent(true);
           // window.location.reload();
         })
         .catch(error => {
           console.error('There was an error!', error);
         });
-    
-    return (
-      <a href={href} onClick={onClick} ref={ref}>
-        Submit Order
-      </a>
-    )
-  })
+
+  }
 
   useEffect(() => {
     updateCartPrice();
@@ -188,6 +219,8 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     setUsername(e.target.value);
   };
 
+  const handleClose = () => setModalOpen(false);
+
   return(
     <motion.div 
       className="MenuItems container"
@@ -195,6 +228,26 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
       initial="hidden"
       animate="visible"
       >
+      <Modal show={modalOpen} onHide={handleClose}>
+          <Modal.Header closeButton>
+          <Modal.Title>Order Completed</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Your Order is on the way!</Modal.Body>
+          <Modal.Footer>
+              <Link 
+              href="/client/client"
+              // href="client/ETA"
+              passHref legacyBehavior
+              > 
+                  <Button variant="primary" onClick={handleClose}>
+                      Got it!
+                  </Button>
+              </Link>
+          
+          </Modal.Footer>
+      </Modal>
+
+
       <Menu
         styles={styles}
         right
