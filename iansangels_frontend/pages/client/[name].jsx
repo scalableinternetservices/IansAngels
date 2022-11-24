@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { css, jsx, Global } from "@emotion/react";
 import Nav from 'react-bootstrap/Nav';
 import Link from "next/link";
@@ -6,19 +6,35 @@ import { motion, AnimatePresence } from "framer-motion";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-
-
 export  const getServerSideProps= (context)=> {
     return {
         props: { 
            name: context.query.name,
-        //    cart: context.query.cart
+           cart: context.query.cart
         }
     }
 }
 
-const ETA = (props) => {
+export function useInterval(callback, delay) {
+    const savedCallback = useRef() ;
+    useEffect(() => { 
+        savedCallback.current = callback;
+    }, [callback]);
+    // Set up the interval.
+    useEffect(() => {
+        function tick() {
+            savedCallback.current();
+        }
+        if (delay !== null) {
+            const id = setInterval(tick, delay);
+            return () => {
+                clearInterval(id);
+            }
+        }
+    }, [callback, delay]);
+}
 
+const ETA = (props) => {
 
 
     const [orders_json, setOrders_json] = useState([]);
@@ -88,6 +104,7 @@ const ETA = (props) => {
     //         console.log("ETA: "+ETA);
     //     }
     // })
+    console.log(props.cart);
     const container = {
         hidden: { opacity: 0 },
         visible: {
@@ -95,10 +112,14 @@ const ETA = (props) => {
         },
       };
 
+    useInterval(async () => {
+        fetchETA();
+    }, 2000)
 
-    useEffect(() => {
+    const fetchETA = () => {
         var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
         var endpoint = "/POS/orders";
+        
         fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
             .then(response => 
                 response.json().then(data => {
@@ -129,7 +150,7 @@ const ETA = (props) => {
                     }
                     // console.log("ETA: "+ETA);
             }))
-    }, [])
+    }
 
     const handleClose = () => setModalOpen(false);
     const handleShow = () => setModalOpen(true);
@@ -175,7 +196,61 @@ const ETA = (props) => {
 
     //   </motion.div>
 
-        <div>
+      <motion.div 
+            className="MenuItems container"
+            variants={container}
+            initial="hidden"
+            animate="visible"
+            css={css`
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        
+        margin-top: 30px;
+        padding: 40px 20px;
+        background: #fff;
+        border-radius: 50px;
+
+        .menu-items {
+          padding: 1rem 1.5rem;
+          display: flex;
+          border: #efefef 1px solid;
+          border-top: none;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+
+          .item-content {
+            display: grid;
+            padding: 0 1rem;
+
+            p {
+              font-size: 0.8rem;
+            }
+
+            .item-title-box {
+              display: flex;
+              justify-content: space-between;
+
+              .item-title,
+              .item-price {
+                font-size: 1rem;
+               
+              }
+            }
+          }
+        }
+
+        img {
+          height: 85px;
+          
+          cursor: pointer;
+        }
+      `}
+        >
+
+        
 
         <Modal show={modalOpen} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -195,11 +270,34 @@ const ETA = (props) => {
             
             </Modal.Footer>
         </Modal>
+
+
+
+        {/* {props.cart.map((item, i) => (
+        <motion.div
+            className="menu-items"
+            key={item.id}
+            variants={itemContainer}
+            transition={{ delay: i * 0.2 }}
+          >
+          
+            <motion.div className="item-content">
+              <motion.div className="item-title-box">
+                <motion.h5 className="item-title">{item.title}</motion.h5>
+                <motion.h5 className="item-price">${item.price}</motion.h5>
+              </motion.div>
+             
+            </motion.div>
+        </motion.div>
+        ))} */}
+
+        
         <h2> Order for: {props.name} </h2>
        
         <h2> ETA: {showETA ? ETA : "calculating"} </h2>
        
-        </div>
+        </motion.div>
+        
 
         
         

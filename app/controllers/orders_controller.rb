@@ -30,6 +30,11 @@ class OrdersController < ApplicationController
         order = Order.new(order_params)
         order.person = personData
 
+        if order.itemNames.length() > 10
+            order.itemNames = order.itemNames[0..9]
+            print "sorry, you cannot create more than 10 orders at a time"
+        end
+
         #need to make sure that there are enough ingredients to use for the order
         ordersToAdd = Array.new
 
@@ -95,6 +100,10 @@ class OrdersController < ApplicationController
             end
         end
 
+        while order.itemNames.length() != 10
+            order.itemNames.append("")
+        end
+
         if order.save
             render json: OrderSerializer.new(order).serialized_json
         else
@@ -129,6 +138,10 @@ class OrdersController < ApplicationController
         end
 
         if request.request_parameters["itemNames"] != nil
+            if request.request_parameters["itemNames"].length() > 10
+                request.request_parameters["itemNames"] = request.request_parameters["itemNames"][0..9]
+            end
+
             for item in request.request_parameters["itemNames"]
                 if update.has_key?(item)
                     update[item] += 1
@@ -382,7 +395,14 @@ class OrdersController < ApplicationController
 
         order = Order.find_by(person_id: personData.id)
 
+        start = order.itemNames.length()
+
+        for i in start..10 do
+            order.itemNames.append("")
+        end
+
         personData.completedOrders.append(order.itemNames)
+        
         if personData.update(person_params)
             print "added to completed orders"
         else

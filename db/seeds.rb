@@ -8,21 +8,21 @@ people = Person.create([
         password: "password",
         email: "Erwan_app@gmail.com",
         position: "client",
-        completedOrders: [["mashed potatoes and 8 oz steak"], ["eggs and 8 oz steak"]]
+        completedOrders: []
     },
     {
         username: "Rhys",
         password: "password",
         email: "Rhys_app@gmail.com",
-        position: "Manager",
-        completedOrders: [["mashed potatoes and 8 oz steak"]]
+        position: "client",
+        completedOrders: []
     },
     {
         username: "Max",
         password: "password",
         email: "Max_app@gmail.com",
         position: "Cook",
-        completedOrders: [["Cookies and milk"], ["completed order that won't get counted in price"]]
+        completedOrders: []
     }
 ])
 

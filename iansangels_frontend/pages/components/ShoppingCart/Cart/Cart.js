@@ -2,9 +2,10 @@ import style from "./Cart.module.css";
 import React, { useEffect, useState } from "react";
 import { css, jsx, Global } from "@emotion/react";
 import Nav from 'react-bootstrap/Nav';
-import Link from "next/link";
+// import Link from "next/link";
 import { useRouter } from "next/router";
 import Button from '@mui/material/Button';
+import Link from '@mui/material/Link';
 // import Button from 'components/CustomButtons/Button.js';
 
 // import { ReactComponent as Right } from "../../Resources/image/arrowRight.svg";
@@ -16,11 +17,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import { slide as Menu } from "react-burger-menu";
 import MenuData from "../../Menu/MenuData";
 import Container from "react-bootstrap/Container";
+import { create } from "@mui/material/styles/createTransitions";
+import Modal from 'react-bootstrap/Modal';
 
 const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
 
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
   const [username, setUsername] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const router = useRouter()
 
   const itemContainer = {
     hidden: { y: 20, opacity: 0 },
@@ -107,71 +112,138 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     console.log("Cart updated, price:" + price);
   }
 
-  var personInfo = {
-    "username": "Erwan",
-    // "password": "password",
-    // "email": "Erwan_app@gmail.com",
-    // "position": "client",
-    // "completedOrders": [],
-  }
-
   var order = { 
     "ETA": 0,
     "username": username,
     "itemNames": [],
   }
 
-  var requestOptions = {
+
+  var orderRequestOptions = {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(order)
   }; 
 
-  const submitOrder = () => {
-    console.log("Submitting cart" + cart);
+  const submitOrder = async () => {
+    console.log("Submitting "+username+"'s cart" + cart);
     order.itemNames = cart.map(a => a.title);
-    requestOptions.body = JSON.stringify(order);
+    orderRequestOptions.body = JSON.stringify(order);
 
-    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-    var endpoint = "/POS/orders";
-    fetch(rails_url+endpoint,requestOptions) //fetch with no options does a get request to that endpoint
-        .then(response => {
-          console.log(response.json());
-          setOrderSent(true);
-          // window.location.reload();
-        })
-        .catch(error => {
-          console.error('There was an error!', error);
-        });
+    let userExisted = await checkUserExistPromise();
+    if(userExisted){
+      console.log("user existed!");
+      setModalOpen(true);
+    }else{
+      console.log("user not exist");
+      createUser();
+      await timeout(1000);
+
+
+      console.log("Sending Orders")
+      var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+      var endpoint = "/POS/orders";
+      fetch(rails_url+endpoint,orderRequestOptions) //fetch with no options does a get request to that endpoint
+          .then(response => {
+            console.log(response.json());
+            // window.location.reload();
+          })
+          .catch(error => {
+            console.error('There was an error!', error);
+          });
+
+      console.log(cart);
+
+      router.push({
+        pathname: "/client/[name]",
+        query: {
+          name: username,
+          cart: cart,
+        },
+      });
+    }
+
+    function timeout(delay) {
+      return new Promise( res => setTimeout(res, delay) );
+    }
+
+
+    // if(!checkUserExist(username)){
+    //   console.log("user not exist")
+    //   createUser();
+
+    //   var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    //   var endpoint = "/POS/orders";
+    //   fetch(rails_url+endpoint,orderRequestOptions) //fetch with no options does a get request to that endpoint
+    //       .then(response => {
+    //         console.log(response.json());
+    //         // window.location.reload();
+    //       })
+    //       .catch(error => {
+    //         console.error('There was an error!', error);
+    //       });
+    // }else{
+    //   console.log("user existed!")
+    //   setModalOpen(true);
+    // }
+
       
     
   }
 
-
-  const SubmitOrderButton = React.forwardRef(({ onClick, href }, ref) => {
-
-    console.log("Submitting cart" + cart);
-    order.itemNames = cart.map(a => a.title);
-    requestOptions.body = JSON.stringify(order);
-
+  const checkUserExistPromise = function () {
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-    var endpoint = "/POS/orders";
-    fetch(rails_url+endpoint,requestOptions) //fetch with no options does a get request to that endpoint
+    var endpoint = "/person";
+    return new Promise(function (resolve, reject){
+      fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
         .then(response => {
-          console.log(response.json());
-          setOrderSent(true);
+          console.log("Checking if [" + username + "] existed");
+          console.log(response);
+          response.json().then(data => {
+            console.log(data);
+            data['data'].map((person) => {
+              console.log("Username: " + person.attributes.username );
+              if(person.attributes.username == username){
+                resolve(true)
+              }
+            })
+            resolve(false)
+          }
+          )
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+          reject(error);
+        });
+
+    })
+  }
+
+  const createUser = async() => {
+    var createPersonRequestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        "username": username,
+        "password": "password",
+        "email": "random_User_app@gmail.com",
+        "position": "client",
+        "completedOrders": []
+      })
+    }
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/createUser";
+    fetch(rails_url+endpoint,createPersonRequestOptions) //fetch with no options does a get request to that endpoint
+        .then(response => {
           // window.location.reload();
+          console.log('person created!');
+          console.log(response.json());
         })
         .catch(error => {
           console.error('There was an error!', error);
         });
-    
-    return (
-      <a href={href} onClick={onClick} ref={ref}>
-        Submit Order
-      </a>
-    )
-  })
+
+  }
 
   useEffect(() => {
     updateCartPrice();
@@ -188,6 +260,8 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     setUsername(e.target.value);
   };
 
+  const handleClose = () => setModalOpen(false);
+
   return(
     <motion.div 
       className="MenuItems container"
@@ -195,6 +269,20 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
       initial="hidden"
       animate="visible"
       >
+      <Modal show={modalOpen} onHide={handleClose}>
+          <Modal.Header closeButton>
+          <Modal.Title>Username Existed</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Please use a different username</Modal.Body>
+          <Modal.Footer>
+              <Button variant="primary" onClick={handleClose}>
+                  Got it!
+              </Button>
+      
+          </Modal.Footer>
+      </Modal>
+
+
       <Menu
         styles={styles}
         right
@@ -230,37 +318,56 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
         {/* <button onClick={routeChange}>Check Out</button> */}
         {/* <Nav.Link href="/client/checkout">Check Out</Nav.Link> */}
         {/* <button onClick={submitOrder}>Submit Order</button> */}
-        <Link 
+        {/* <Link 
           href={{
             pathname:"/client/[name]", 
             query: {
-              name: order.username,
+              name: username,
               cart: cart
             },
           }}
-          // href="client/ETA"
           passHref legacyBehavior
         >
-          {/* <SubmitOrderButton /> */}
-          {/* <form onSubmit={()=> submitOrder()}>
-            <label>
-              Name:
-              <input type="text" value={order.username} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form> */}
           <Button variant="contained" onClick={()=> submitOrder()}>
             Submit Order
           </Button>
-        </Link>
+        </Link> */}
+
+        {/* <Link
+          component="button"
+          onClick={() => {submitOrder}}
+          href={{
+            pathname:"/client/[name]", 
+            query: {
+              name: username,
+              cart: cart
+            },
+          }}
+        >
+          Submit Order
+        </Link> */}
 
         <form onSubmit={()=> submitOrder()}>
-            <label>
-              Name:
-              <input type="text" value={order.username} onChange={handleSubmit}/>
-            </label>
-            <input type="submit" value="Save" />
-          </form>
+          <label>
+            Name:
+            <input type="text" value={username} onChange={handleSubmit}/>
+          </label>
+          {/* <input type="submit" value="Save" /> */}
+        </form>
+
+        <Link
+          component="button"
+          onClick={()=> submitOrder()}
+          href={{
+            pathname:"/client/[name]", 
+            query: {
+              name: username,
+              cart: cart
+            },
+          }}
+        >
+          Submit Order
+        </Link>
 
         
         </motion.div>
