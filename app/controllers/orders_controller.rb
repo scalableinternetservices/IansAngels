@@ -307,6 +307,67 @@ class OrdersController < ApplicationController
         end
     end
 
+    def cancel
+        personData = Person.find_by(username: params[:username])
+
+        if personData == nil
+            print "no user exists under this username, please create an account or try a different username"
+            return
+        end
+
+        order = Order.find_by(person_id: personData.id)
+
+        if order == nil
+            print "This user does not have a current order placed, please create an order!"
+            return
+        end
+
+        currentItems = Hash.new
+
+        for item in order.itemNames
+            if currentItems.has_key?(item)
+                currentItems[item] += 1
+            else
+                currentItems[item] = 1
+            end
+        end
+
+        for (key, value) in currentItems
+            curItem = Menu.find_by(itemName: key)
+
+            for ingredient in curItem.ingredients
+                quantityAndFoodName = ingredient.split(':', -1)
+                quantityAndFoodName[0].strip!
+                quantityAndFoodName[1].strip!
+                qty = quantityAndFoodName[0].to_i
+                food = quantityAndFoodName[1]
+
+                inventoryItem = Inventory.find_by(foodName: food)
+                inventoryFood = inventoryItem.foodName
+                inventoryAmount = inventoryItem.quantity
+
+                inventoryItem.quantity += value * qty
+
+                puts "\nCHECK VALUE BELOW\n"
+                puts inventoryItem.foodName
+                puts inventoryItem.quantity
+                puts "CHECK VALUE ABOVE\n"
+
+                if inventoryItem.update(inventory_params)
+                    print "successfully canceled the order " + inventoryItem.foodName
+                else
+                    print "did not successfully cancel the order " + inventoryItem.foodName
+                end
+            end
+        end
+
+        if order.destroy
+            head :no_content
+        else
+            raise ActionController::RoutingError.new('Not Found'), status: 404
+        end
+    end
+
     def destroy
         #only destroy an order when it is completed, maybe can add an option to cancel later
         personData = Person.find_by(username: params[:username])
