@@ -300,6 +300,8 @@ class OrdersController < ApplicationController
         print order.itemNames
         print "\n\nAFTER"
 
+        order.ETA = request.request_parameters["ETA"]
+
         if order.save
             render json: OrderSerializer.new(order).serialized_json
         else
