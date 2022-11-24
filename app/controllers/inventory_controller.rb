@@ -11,7 +11,14 @@ class InventoryController < ApplicationController
         #inventoryJSON = InventorySerializer.new(inventory).serialized_json
 
         #total = menuJSON + ordersJSON + inventoryJSON
-        inventory = InventorySerializer.new(inventory).serialized_json
+
+        # this is Erwan's code from main
+        # inventory = InventorySerializer.new(inventory).serialized_json
+
+        inventory = Rails.cache.fetch(:inventory, expires_in: 60.minutes) do
+            print "I am another executing this block"
+            InventorySerializer.new(Inventory.all).serialized_json
+        end
 
         render json: inventory
     end

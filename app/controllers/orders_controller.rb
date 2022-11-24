@@ -4,7 +4,13 @@ class OrdersController < ApplicationController
     def index
         orders = Order.all
 
-        render json: OrderSerializer.new(orders).serialized_json
+        # Erwan's code from main
+        # render json: OrderSerializer.new(orders).serialized_json
+
+        orders = Rails.cache.fetch(:orders, expires_in: 60.minutes) do
+            print "I am executing this block"
+            OrderSerializer.new(Order.all).serialized_json
+        end
     end
 
     def show
