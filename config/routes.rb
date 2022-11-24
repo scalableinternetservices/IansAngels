@@ -47,4 +47,5 @@ Rails.application.routes.draw do
   delete 'POS/inventory', to: 'inventory#destroy'
   delete 'POS/menu', to: 'menu#destroy'
   delete 'POS/orders', to: 'orders#destroy'
+  delete 'client/order', to: 'orders#cancel'
 end
