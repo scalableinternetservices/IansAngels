@@ -128,24 +128,26 @@ class OrdersController < ApplicationController
             end
         end
 
-        for item in request.request_parameters["itemNames"]
-            if update.has_key?(item)
-                update[item] += 1
-            else
-                update[item] = 1
+        if request.request_parameters["itemNames"] != nil
+            for item in request.request_parameters["itemNames"]
+                if update.has_key?(item)
+                    update[item] += 1
+                else
+                    update[item] = 1
+                end
             end
-        end
 
-        #here, trying to make take the diffence of the two hashes to update the inventory
-        for (key, value) in update
-            if current.has_key?(key) && update.has_key?(key)
-                update[key] -= current[key]
+            #here, trying to make take the diffence of the two hashes to update the inventory
+            for (key, value) in update
+                if current.has_key?(key) && update.has_key?(key)
+                    update[key] -= current[key]
+                end
             end
-        end
 
-        for (key, value) in current
-            if !update.has_key?(key)
-                update[key] = -value
+            for (key, value) in current
+                if !update.has_key?(key)
+                    update[key] = -value
+                end
             end
         end
 
@@ -300,7 +302,11 @@ class OrdersController < ApplicationController
         print order.itemNames
         print "\n\nAFTER"
 
-        order.ETA = request.request_parameters["ETA"]
+        if request.request_parameters["ETA"] != nil
+            order.ETA = request.request_parameters["ETA"]
+        else
+            order.ETA = 0
+        end
 
         if order.save
             render json: OrderSerializer.new(order).serialized_json
