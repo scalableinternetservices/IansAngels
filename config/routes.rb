@@ -12,6 +12,7 @@ Rails.application.routes.draw do
 
   #will now display the menu and only the specific user's orders and completed orders
   get 'person/:id', to: 'person#show'
+  get 'POS/sales', to: 'inventory#sales'
 
   # show
   get 'kitchen/:id', to: 'orders#show'
@@ -27,6 +28,7 @@ Rails.application.routes.draw do
   post 'POS/inventory', to: 'inventory#create'
   post 'POS/menu', to: 'menu#create'
   post 'POS/orders', to: 'orders#create'
+  post 'createUser', to: 'person#create'
 
   #all patch requests tested by insomnia seem to work
   #when sending a patch request for an order, can simply use username of user instead of their ID

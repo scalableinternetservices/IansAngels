@@ -2,10 +2,10 @@
 /** @jsx jsx */
 import { css, jsx, Global } from "@emotion/react";
 import { useState, useEffect } from "react";
-import MenuItems from "./components/Menu/MenuItems";
+import MenuItems from "../components/Menu/MenuItems";
 // import MenuData from "./components/Menu/MenuData";
 // import {menuData} from "./components/MenuData";
-import Navbar from "./components/Menu/Navbar";
+import Navbar from "../components/Menu/Navbar";
 
 import Nav from "react-bootstrap/Nav";
 import Navbar2 from "react-bootstrap/Navbar";
@@ -13,12 +13,12 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 
 // import { slide as Menu } from "react-burger-menu";
-import Cart from "./components/ShoppingCart/Cart/Cart"
+import Cart from "../components/ShoppingCart/Cart/Cart"
 
-import styles from "./client.module.css";
 import { motion } from "framer-motion";
 
-function App() {
+// function App() {
+export default function client() {
   const [all, setAll] = useState(true);
   const [breakfast, setBreakfast] = useState(false);
   const [lunch, setLunch] = useState(false);
@@ -32,12 +32,6 @@ function App() {
 
   const [ETA, setETA] = useState(0);
   const [orderSent, setOrderSent] = useState(false);
-
-  var order = { 
-    ETA: 0,
-    itemNames: cart,
-    person_id: 1,
-  }
 
   useEffect(() => {
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
@@ -56,18 +50,20 @@ function App() {
   }, [])
   
 
-  useEffect(() => {
-    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-    var endpoint = "/POS/orders";
-    fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
-        .then(response => 
-            response.json().then(data => {
-            setETA(data["data"])
-        }))
-        .catch(error => {
-          console.error('There was an error!', error);
-        });
-  }, [])
+  // useEffect(() => {
+  //   if(orderSent){
+  //     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+  //     var endpoint = "/POS/orders";
+  //     fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+  //         .then(response => 
+  //             response.json().then(data => {
+  //             setETA(data["data"])
+  //         }))
+  //         .catch(error => {
+  //           console.error('There was an error!', error);
+  //         });
+  //     }
+  // }, [])
 
   const [loading, setLoading] = useState(true);
 
@@ -149,4 +145,4 @@ function App() {
   );
 }
 
-export default App;
+// export default App;
