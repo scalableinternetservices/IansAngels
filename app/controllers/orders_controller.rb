@@ -27,6 +27,11 @@ class OrdersController < ApplicationController
             return
         end
 
+        if order.itemNames.length() > 10
+            order.itemNames = order.itemNames[0..9]
+            print "sorry, you cannot create more than 10 orders at a time"
+        end
+
         order = Order.new(order_params)
         order.person = personData
 
@@ -93,6 +98,10 @@ class OrdersController < ApplicationController
                     end
                 end
             end
+        end
+
+        while order.itemNames.length() != 10
+            order.itemNames.append([])
         end
 
         if order.save
@@ -382,7 +391,14 @@ class OrdersController < ApplicationController
 
         order = Order.find_by(person_id: personData.id)
 
+        start = order.itemNames.length()
+
+        for i in start..10 do
+            order.itemNames.append([])
+        end
+
         personData.completedOrders.append(order.itemNames)
+        
         if personData.update(person_params)
             print "added to completed orders"
         else
