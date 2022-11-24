@@ -138,6 +138,10 @@ class OrdersController < ApplicationController
         end
 
         if request.request_parameters["itemNames"] != nil
+            if request.request_parameters["itemNames"].length() > 10
+                request.request_parameters["itemNames"] = request.request_parameters["itemNames"][0..9]
+            end
+
             for item in request.request_parameters["itemNames"]
                 if update.has_key?(item)
                     update[item] += 1
