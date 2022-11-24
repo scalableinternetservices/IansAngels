@@ -6,13 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
 
-
-
 export  const getServerSideProps= (context)=> {
     return {
         props: { 
            name: context.query.name,
-        //    cart: context.query.cart
+           cart: context.query.cart
         }
     }
 }
@@ -106,6 +104,7 @@ const ETA = (props) => {
     //         console.log("ETA: "+ETA);
     //     }
     // })
+    console.log(props.cart);
     const container = {
         hidden: { opacity: 0 },
         visible: {
@@ -197,7 +196,61 @@ const ETA = (props) => {
 
     //   </motion.div>
 
-        <div>
+      <motion.div 
+            className="MenuItems container"
+            variants={container}
+            initial="hidden"
+            animate="visible"
+            css={css`
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        
+        margin-top: 30px;
+        padding: 40px 20px;
+        background: #fff;
+        border-radius: 50px;
+
+        .menu-items {
+          padding: 1rem 1.5rem;
+          display: flex;
+          border: #efefef 1px solid;
+          border-top: none;
+
+          &:last-child {
+            border-bottom: none;
+          }
+
+
+          .item-content {
+            display: grid;
+            padding: 0 1rem;
+
+            p {
+              font-size: 0.8rem;
+            }
+
+            .item-title-box {
+              display: flex;
+              justify-content: space-between;
+
+              .item-title,
+              .item-price {
+                font-size: 1rem;
+               
+              }
+            }
+          }
+        }
+
+        img {
+          height: 85px;
+          
+          cursor: pointer;
+        }
+      `}
+        >
+
+        
 
         <Modal show={modalOpen} onHide={handleClose}>
             <Modal.Header closeButton>
@@ -217,11 +270,34 @@ const ETA = (props) => {
             
             </Modal.Footer>
         </Modal>
+
+
+
+        {/* {props.cart.map((item, i) => (
+        <motion.div
+            className="menu-items"
+            key={item.id}
+            variants={itemContainer}
+            transition={{ delay: i * 0.2 }}
+          >
+          
+            <motion.div className="item-content">
+              <motion.div className="item-title-box">
+                <motion.h5 className="item-title">{item.title}</motion.h5>
+                <motion.h5 className="item-price">${item.price}</motion.h5>
+              </motion.div>
+             
+            </motion.div>
+        </motion.div>
+        ))} */}
+
+        
         <h2> Order for: {props.name} </h2>
        
         <h2> ETA: {showETA ? ETA : "calculating"} </h2>
        
-        </div>
+        </motion.div>
+        
 
         
         

@@ -20,7 +20,6 @@ import Container from "react-bootstrap/Container";
 import { create } from "@mui/material/styles/createTransitions";
 import Modal from 'react-bootstrap/Modal';
 
-
 const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
 
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
@@ -153,11 +152,13 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
             console.error('There was an error!', error);
           });
 
+      console.log(cart);
+
       router.push({
         pathname: "/client/[name]",
         query: {
           name: username,
-          cart: cart
+          cart: cart,
         },
       });
     }
