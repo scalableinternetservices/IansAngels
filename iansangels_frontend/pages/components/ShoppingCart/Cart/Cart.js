@@ -158,7 +158,8 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
         pathname: "/client/[name]",
         query: {
           name: username,
-          cart: cart,
+          cart: JSON.stringify(cart),
+          cartPrice: cartTotalPrice,
         },
       });
     }

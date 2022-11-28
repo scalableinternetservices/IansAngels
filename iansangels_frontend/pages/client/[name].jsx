@@ -10,7 +10,8 @@ export  const getServerSideProps= (context)=> {
     return {
         props: { 
            name: context.query.name,
-           cart: context.query.cart
+           cart: JSON.parse(context.query.cart),
+           cartPrice: context.query.cartPrice,
         }
     }
 }
@@ -271,15 +272,18 @@ const ETA = (props) => {
             </Modal.Footer>
         </Modal>
 
+        <h2> Order for: {props.name} </h2>
 
 
-        {/* {props.cart.map((item, i) => (
+
+        {props.cart.map((item, i) => (
         <motion.div
             className="menu-items"
             key={item.id}
             variants={itemContainer}
             transition={{ delay: i * 0.2 }}
           >
+            <img src={item.imgURL} alt="food burger" width={200} height={150}/>
           
             <motion.div className="item-content">
               <motion.div className="item-title-box">
@@ -289,10 +293,11 @@ const ETA = (props) => {
              
             </motion.div>
         </motion.div>
-        ))} */}
+        ))}
 
-        
-        <h2> Order for: {props.name} </h2>
+        <h2> Total: ${props.cartPrice} </h2>
+
+      
        
         <h2> ETA: {showETA ? ETA : "calculating"} </h2>
        
