@@ -355,29 +355,30 @@ class OrdersController < ApplicationController
 
         for (key, value) in currentItems
             curItem = Menu.find_by(itemName: key)
+            if curItem != nil
+                for ingredient in curItem.ingredients
+                    quantityAndFoodName = ingredient.split(':', -1)
+                    quantityAndFoodName[0].strip!
+                    quantityAndFoodName[1].strip!
+                    qty = quantityAndFoodName[0].to_i
+                    food = quantityAndFoodName[1]
 
-            for ingredient in curItem.ingredients
-                quantityAndFoodName = ingredient.split(':', -1)
-                quantityAndFoodName[0].strip!
-                quantityAndFoodName[1].strip!
-                qty = quantityAndFoodName[0].to_i
-                food = quantityAndFoodName[1]
+                    inventoryItem = Inventory.find_by(foodName: food)
+                    inventoryFood = inventoryItem.foodName
+                    inventoryAmount = inventoryItem.quantity
 
-                inventoryItem = Inventory.find_by(foodName: food)
-                inventoryFood = inventoryItem.foodName
-                inventoryAmount = inventoryItem.quantity
+                    inventoryItem.quantity += value * qty
 
-                inventoryItem.quantity += value * qty
+                    puts "\nCHECK VALUE BELOW\n"
+                    puts inventoryItem.foodName
+                    puts inventoryItem.quantity
+                    puts "CHECK VALUE ABOVE\n"
 
-                puts "\nCHECK VALUE BELOW\n"
-                puts inventoryItem.foodName
-                puts inventoryItem.quantity
-                puts "CHECK VALUE ABOVE\n"
-
-                if inventoryItem.update(inventory_params)
-                    print "successfully canceled the order " + inventoryItem.foodName
-                else
-                    print "did not successfully cancel the order " + inventoryItem.foodName
+                    if inventoryItem.update(inventory_params)
+                        print "successfully canceled the order " + inventoryItem.foodName
+                    else
+                        print "did not successfully cancel the order " + inventoryItem.foodName
+                    end
                 end
             end
         end

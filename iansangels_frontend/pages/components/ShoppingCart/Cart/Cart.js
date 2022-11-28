@@ -133,14 +133,14 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     let userExisted = await checkUserExistPromise();
     if(userExisted){
       console.log("user existed!");
-      setModalOpen(true);
+      // setModalOpen(true);
     }else{
       console.log("user not exist");
       createUser();
       await timeout(1000);
+    }
 
-
-      console.log("Sending Orders")
+    console.log("Sending Orders")
       var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
       var endpoint = "/POS/orders";
       fetch(rails_url+endpoint,orderRequestOptions) //fetch with no options does a get request to that endpoint
@@ -162,34 +162,11 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
           cartPrice: cartTotalPrice,
         },
       });
-    }
-
-    function timeout(delay) {
-      return new Promise( res => setTimeout(res, delay) );
-    }
-
-
-    // if(!checkUserExist(username)){
-    //   console.log("user not exist")
-    //   createUser();
-
-    //   var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-    //   var endpoint = "/POS/orders";
-    //   fetch(rails_url+endpoint,orderRequestOptions) //fetch with no options does a get request to that endpoint
-    //       .then(response => {
-    //         console.log(response.json());
-    //         // window.location.reload();
-    //       })
-    //       .catch(error => {
-    //         console.error('There was an error!', error);
-    //       });
-    // }else{
-    //   console.log("user existed!")
-    //   setModalOpen(true);
-    // }
-
-      
     
+  }
+
+  function timeout(delay) {
+    return new Promise( res => setTimeout(res, delay) );
   }
 
   const checkUserExistPromise = function () {
