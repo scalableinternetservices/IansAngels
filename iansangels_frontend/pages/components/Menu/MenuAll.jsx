@@ -36,7 +36,8 @@ const MenuAll = ({ all, items, cart , setCartOpened}) => {
                     console.log(item.attributes.itemName);
                     cart.push({
                       title: item.attributes.itemName,
-                      price: item.attributes.price
+                      price: item.attributes.price,
+                      imgURL: item.attributes.imageURL,
                     });
                     setCartOpened(true);
                   }}

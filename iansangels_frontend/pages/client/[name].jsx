@@ -10,7 +10,8 @@ export  const getServerSideProps= (context)=> {
     return {
         props: { 
            name: context.query.name,
-           cart: context.query.cart
+           cart: JSON.parse(context.query.cart),
+           cartPrice: context.query.cartPrice,
         }
     }
 }
@@ -40,8 +41,8 @@ const ETA = (props) => {
     const [orders_json, setOrders_json] = useState([]);
     const [ETA, setETA] = useState(0);
     const [showETA, setShowETA] = useState(false);
-    // const [orderCompleted, setOrderCompleted] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
+    const [cancelOrderModalOpen, setCancelOrderModalOpen] = useState(false);
 
     const itemContainer = {
         hidden: { y: 20, opacity: 0 },
@@ -113,7 +114,9 @@ const ETA = (props) => {
       };
 
     useInterval(async () => {
-        fetchETA();
+        if(!cancelOrderModalOpen){
+          fetchETA();
+        }
     }, 2000)
 
     const fetchETA = () => {
@@ -152,49 +155,25 @@ const ETA = (props) => {
             }))
     }
 
-    const handleClose = () => setModalOpen(false);
-    const handleShow = () => setModalOpen(true);
+    var cancelOrderRequestOpt = {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({username: props.name}),
+    }; 
+
+    const handleCancelOrder = () => {
+      var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+      var endpoint = "/client/order";
+      fetch(rails_url+endpoint, cancelOrderRequestOpt)
+        .then(response => {
+          console.log(response.json());
+        })
+      console.log("order cancelled");
+      setCancelOrderModalOpen(true);
+    }
+
 
     return(
-    //     <motion.div 
-    //         className="MenuItems container"
-    //         variants={container}
-    //         initial="hidden"
-    //         animate="visible"
-    //         >
-
-    //         <motion.div
-    //             className="menu-items"
-    //             key={item.id}
-    //             variants={itemContainer}
-    //             transition={{ delay: i * 0.2 }}
-    //         >
-
-    //         {cart.map((item, i) => (
-    //                 <motion.div
-    //                     className="menu-items"
-    //                     key={item.id}
-    //                     variants={itemContainer}
-    //                     transition={{ delay: i * 0.2 }}
-    //                 >
-    //         {/* <img src={item.imageSrc} alt="food burger" /> */}
-    //         <motion.div className="item-content" key={i}>
-    //           <motion.div className="item-title-box">
-    //             <motion.h5 className="item-title">{item.title}</motion.h5>
-    //             <motion.h5 className="item-price">${item.price}</motion.h5>
-    //           </motion.div>
-    //           <button onClick={(e) => removeCartItem({i},e)}>Remove</button>
-    //         </motion.div>
-    //       </motion.div>
-    //     ))}
-    //         <div>
-    //             <h2> Order for: {props.name} </h2>
-    //             <h2> ETA: {ETA} </h2>
-    //         </div>
-    //         </motion.div>
-
-
-    //   </motion.div>
 
       <motion.div 
             className="MenuItems container"
@@ -252,7 +231,7 @@ const ETA = (props) => {
 
         
 
-        <Modal show={modalOpen} onHide={handleClose}>
+        <Modal show={modalOpen} onHide={()=>setModalOpen(false)}>
             <Modal.Header closeButton>
             <Modal.Title>Order Completed</Modal.Title>
             </Modal.Header>
@@ -263,7 +242,7 @@ const ETA = (props) => {
                 // href="client/ETA"
                 passHref legacyBehavior
                 > 
-                    <Button variant="primary" onClick={handleClose}>
+                    <Button variant="primary" onClick={()=>setModalOpen(false)}>
                         Got it!
                     </Button>
                 </Link>
@@ -271,15 +250,37 @@ const ETA = (props) => {
             </Modal.Footer>
         </Modal>
 
+        <Modal show={cancelOrderModalOpen} onHide={()=>setCancelOrderModalOpen(false)}>
+            <Modal.Header closeButton>
+            <Modal.Title>Order Cancelled</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>Your Order is cancelled!</Modal.Body>
+            <Modal.Footer>
+                <Link 
+                href="/client/client"
+                // href="client/ETA"
+                passHref legacyBehavior
+                > 
+                    <Button variant="primary" onClick={()=>setCancelOrderModalOpen(false)}>
+                        Got it!
+                    </Button>
+                </Link>
+            
+            </Modal.Footer>
+        </Modal>
+
+        <h2> Order for: {props.name} </h2>
 
 
-        {/* {props.cart.map((item, i) => (
+
+        {props.cart.map((item, i) => (
         <motion.div
             className="menu-items"
             key={item.id}
             variants={itemContainer}
             transition={{ delay: i * 0.2 }}
           >
+            <img src={item.imgURL} alt="food burger" width={200} height={150}/>
           
             <motion.div className="item-content">
               <motion.div className="item-title-box">
@@ -289,13 +290,17 @@ const ETA = (props) => {
              
             </motion.div>
         </motion.div>
-        ))} */}
+        ))}
 
-        
-        <h2> Order for: {props.name} </h2>
+        <h2> Total: ${props.cartPrice} </h2>
+
+      
        
         <h2> ETA: {showETA ? ETA : "calculating"} </h2>
-       
+        <Button variant="primary" onClick={handleCancelOrder}>
+            Cancel Order
+        </Button>
+
         </motion.div>
         
 
