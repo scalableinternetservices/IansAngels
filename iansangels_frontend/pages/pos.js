@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Head from 'next/head';
 import Image from 'next/image';
 import styles from '../styles/Home.module.css';
@@ -18,16 +18,39 @@ export default function Pos() {
 
     const [orders_json, setOrders_json] = useState([]);
 
-    useEffect(() => {
-        var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-        var endpoint = "/POS/orders";
-        fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
-            .then(response => 
-                response.json().then(data => {
-                    setOrders_json(data["data"])
-                    setLoading(false);
-            }))
-    }, [])
+    function useInterval(callback, delay) {
+      const savedCallback = useRef() ;
+      useEffect(() => { 
+          savedCallback.current = callback;
+      }, [callback]);
+      // Set up the interval.
+      useEffect(() => {
+          function tick() {
+              savedCallback.current();
+          }
+          if (delay !== null) {
+              const id = setInterval(tick, delay);
+              return () => {
+                  clearInterval(id);
+              }
+          }
+      }, [callback, delay]);
+    }
+
+    useInterval(async () => {
+      fetchOrder();
+    }, 2000)
+
+    const fetchOrder = () =>{
+      var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+      var endpoint = "/POS/orders";
+      fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
+          .then(response => 
+              response.json().then(data => {
+                  setOrders_json(data["data"])
+                  setLoading(false);
+          }))
+    }
 
     const deleteOrder = (i) => {
       console.log("delete " + i);
