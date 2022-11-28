@@ -35,8 +35,11 @@ export default function Kitchen() {
     })
       .then((response) => response.json())
       .then((json) => {
-        console.log(json);
-        window.location.reload();
+        const orders = [...ordersJson];
+        const idx = ordersJson.findIndex((el) => el.id == editETAOrder.id);
+        orders[idx].attributes.ETA = editETAValue;
+        setOrdersJson(orders);
+        // window.location.reload();
       });
   };
 
@@ -53,7 +56,10 @@ export default function Kitchen() {
       headers: {
         "Content-type": "application/json; charset=UTF-8",
       },
-    }).then(() => window.location.reload());
+    }).then(() => {
+      const orders = ordersJson.filter((el) => el.id != completeOrder.id);
+      setOrdersJson(orders);
+    });
   };
 
   const getOrders = () => {
@@ -111,7 +117,7 @@ export default function Kitchen() {
             <thead>
               <tr>
                 <th className="text-center">Order Id</th>
-                <th className="text-center">Client User ID</th>
+                <th className="text-center">Client Name</th>
                 <th className="text-center">Order</th>
                 <th className="text-center">ETA</th>
                 <th className="text-center">Update ETA</th>
@@ -125,7 +131,7 @@ export default function Kitchen() {
                   return (
                     <tr>
                       <td scope="row">{order.id}</td>
-                      <td width="10%">{order.attributes.person.id}</td>
+                      <td width="10%">{order.attributes.person.username}</td>
                       <td width="20%">
                         <ul>
                           {order.attributes.itemNames.map((item) => {
