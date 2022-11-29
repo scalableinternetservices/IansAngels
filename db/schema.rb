@@ -34,6 +34,7 @@ ActiveRecord::Schema[7.0].define(version: 2022_11_04_205010) do
   end
 
   create_table "orders", force: :cascade do |t|
+    t.boolean "readyForKitchen"
     t.integer "ETA"
     t.string "itemNames", default: [], array: true
     t.bigint "person_id", null: false

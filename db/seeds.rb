@@ -81,11 +81,13 @@ menu = Menu.create([
 
 orders = Order.create([
     {
+        readyForKitchen: false,
         ETA: 10,
         person: people.first,
         itemNames: ["mashed potatoes and 8 oz steak"]
     },
     {
+        readyForKitchen: false,
         ETA: 10,
         person: people.second,
         itemNames: ["eggs and 8 oz steak", "Cookies and milk"]
