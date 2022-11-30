@@ -2,7 +2,7 @@ require 'json'
 
 class OrdersController < ApplicationController
     def index
-        orders = Order.all
+        #orders = Order.all
 
         # Erwan's code from main
         # render json: OrderSerializer.new(orders).serialized_json
@@ -11,6 +11,7 @@ class OrdersController < ApplicationController
             print "I am executing this block"
             OrderSerializer.new(Order.all).serialized_json
         end
+        render json: orders
     end
 
     def show
