@@ -103,7 +103,7 @@ export default function Kitchen() {
             <Navbar.Collapse id="basic-navbar-nav">
               <Nav className="me-auto">
                 <Nav.Link href="/">Home</Nav.Link>
-                <Nav.Link href="/client">Client</Nav.Link>
+                <Nav.Link href="/client/client">Client</Nav.Link>
                 <Nav.Link href="/kitchen">Kitchen</Nav.Link>
               </Nav>
             </Navbar.Collapse>
@@ -128,42 +128,43 @@ export default function Kitchen() {
               {console.log(ordersJson)}
               {ordersJson &&
                 ordersJson.map((order, i) => {
-                  return (
-                    <tr>
-                      <td scope="row">{order.id}</td>
-                      <td width="10%">{order.attributes.person.username}</td>
-                      <td width="20%">
-                        <ul>
-                          {order.attributes.itemNames.map((item) => {
-                            return <li>{item}</li>;
-                          })}
-                        </ul>
-                      </td>
-                      <td className="text-center" width="25%">
-                        {order.attributes.ETA}
-                      </td>
-                      <td className="text-center" width="10%">
-                        <Button
-                          variant="secondary"
-                          onClick={(e) => {
-                            editETA(order);
-                          }}
-                        >
-                          Edit ETA
-                        </Button>
-                      </td>
-                      <td className="text-center" width="10%">
-                        <Button
-                          variant="success"
-                          onClick={(e) => {
-                            complete(order);
-                          }}
-                        >
-                          Complete
-                        </Button>
-                      </td>
-                    </tr>
-                  );
+                  if (order.attributes.readyForKitchen)
+                    return (
+                      <tr>
+                        <td scope="row">{order.id}</td>
+                        <td width="10%">{order.attributes.person.username}</td>
+                        <td width="20%">
+                          <ul>
+                            {order.attributes.itemNames.map((item) => {
+                              return <li>{item}</li>;
+                            })}
+                          </ul>
+                        </td>
+                        <td className="text-center" width="25%">
+                          {order.attributes.ETA}
+                        </td>
+                        <td className="text-center" width="10%">
+                          <Button
+                            variant="secondary"
+                            onClick={(e) => {
+                              editETA(order);
+                            }}
+                          >
+                            Edit ETA
+                          </Button>
+                        </td>
+                        <td className="text-center" width="10%">
+                          <Button
+                            variant="success"
+                            onClick={(e) => {
+                              complete(order);
+                            }}
+                          >
+                            Complete
+                          </Button>
+                        </td>
+                      </tr>
+                    );
                 })}
             </tbody>
           </table>
