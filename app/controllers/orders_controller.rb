@@ -178,6 +178,10 @@ class OrdersController < ApplicationController
         ordersToAdd = Hash.new
 
         for (key, value) in update
+            if key == ""
+                next
+            end
+
             curItem = Menu.find_by(itemName: key)
 
             #maxAmountOrder is the maximum amount of a menu item you can currently order
