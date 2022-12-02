@@ -365,7 +365,7 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
           onClick={()=> submitOrder()}
 
         >
-          Submit Order
+          Check Out
         </Link>
         {/* <form action="/api/checkout_sessions" method="POST">
       <section>
