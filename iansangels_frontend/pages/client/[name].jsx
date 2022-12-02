@@ -1,10 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useImperativeHandle } from "react";
 import { css, jsx, Global } from "@emotion/react";
 import Nav from 'react-bootstrap/Nav';
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import Modal from 'react-bootstrap/Modal';
 import Button from 'react-bootstrap/Button';
+import { useRouter } from "next/router";
+
+import { loadStripe } from '@stripe/stripe-js';
+import {PaymentElement, useStripe, useElements} from "@stripe/react-stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 
 export  const getServerSideProps= (context)=> {
     return {
@@ -43,6 +48,13 @@ const ETA = (props) => {
     const [showETA, setShowETA] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [cancelOrderModalOpen, setCancelOrderModalOpen] = useState(false);
+    const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+
+    const [cardNumber, setCardNumber] = useState(0);
+    const [balance, setBalance] = useState(50);
+    const [isOrderPaid, setIsOrderPaid] = useState(false);
+
+    const {asPath} = useRouter();
 
     const itemContainer = {
         hidden: { y: 20, opacity: 0 },
@@ -96,16 +108,13 @@ const ETA = (props) => {
           background: "rgba(0, 0, 0, 0)",
         },
       };
+  
+    const [message, setMessage] = React.useState(null);
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    // const [clientSecret, setClientSecret] = React.useState("");
 
 
-    console.log("ClientName: " + props.name);
-    // orders_json.map((order, i)=>{
-    //     if(order.attributes.person.username == props.name){
-    //         setETA(order.ETA);
-    //         console.log("ETA: "+ETA);
-    //     }
-    // })
-    console.log(props.cart);
     const container = {
         hidden: { opacity: 0 },
         visible: {
@@ -172,8 +181,48 @@ const ETA = (props) => {
       setCancelOrderModalOpen(true);
     }
 
+    const handlePayment = async (e) => {
+
+      e.preventDefault();
+      console.log("directing to payment page");
+
+      if (!stripe || !elements) {
+        // Stripe.js has not yet loaded.
+        // Make sure to disable form submission until Stripe.js has loaded.
+        return;
+      }
+  
+      setIsLoading(true);
+  
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          // Make sure to change this to your payment completion page
+          return_url: asPath,
+        },
+      });
+  
+      // This point will only be reached if there is an immediate error when
+      // confirming the payment. Otherwise, your customer will be redirected to
+      // your `return_url`. For some payment methods like iDEAL, your customer will
+      // be redirected to an intermediate site first to authorize the payment, then
+      // redirected to the `return_url`.
+      if (error.type === "card_error" || error.type === "validation_error") {
+        setMessage(error.message);
+      } else {
+        setMessage("An unexpected error occurred.");
+      }
+  
+      setIsLoading(false);
+    }
+
+    const paymentElementOptions = {
+      layout: "tabs",
+    };
+
 
     return(
+      
 
       <motion.div 
             className="MenuItems container"
@@ -269,6 +318,20 @@ const ETA = (props) => {
             </Modal.Footer>
         </Modal>
 
+        <Modal show={paymentModalOpen} onHide={()=>setPaymentModalOpen(false)}>
+            <Modal.Header closeButton>
+            <Modal.Title>Order Failed</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>You're Broke!</Modal.Body>
+            <Modal.Footer>
+                
+              <Button variant="primary" onClick={()=>setPaymentModalOpen(false)}>
+                  Got it!
+              </Button>
+            
+            </Modal.Footer>
+        </Modal>
+
         <h2> Order for: {props.name} </h2>
 
 
@@ -294,16 +357,26 @@ const ETA = (props) => {
 
         <h2> Total: ${props.cartPrice} </h2>
 
-      
-       
-        <h2> ETA: {showETA ? ETA : "calculating"} </h2>
-        <Button variant="primary" onClick={handleCancelOrder}>
-            Cancel Order
-        </Button>
+
+
+        <div>
+
+        
+       <h2> ETA: {showETA 
+       ? (<>  {ETA} Minutes  <br></br>
+        </>)
+       : (<> Order Processing  <br></br>
+       <Button variant="primary" onClick={()=>handleCancelOrder()}>
+         Cancel Order
+        </Button> </>)} </h2>
+            
+
+
+        </div>
+
 
         </motion.div>
         
-
         
         
     )
