@@ -12,10 +12,12 @@ import {PaymentElement, useStripe, useElements} from "@stripe/react-stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
 export  const getServerSideProps= (context)=> {
+  console.log(context.query);
     return {
         props: { 
            name: context.query.name,
            cart: JSON.parse(context.query.cart),
+            // cart: context.query.cart,
            cartPrice: context.query.cartPrice,
         }
     }

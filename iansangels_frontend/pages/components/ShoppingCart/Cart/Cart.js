@@ -8,6 +8,8 @@ import { useRouter } from "next/router";
 import Button from '@mui/material';
 import Link from '@mui/material/Link';
 import { loadStripe } from '@stripe/stripe-js';
+import queryString from "query-string";
+
 
 // import Button from 'components/CustomButtons/Button.js';
 
@@ -161,31 +163,30 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
 
     console.log(cart);
 
-    await timeout(400);
 
-    console.log("Router Path: " + router.pathname);
 
-    // const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+    // verify payment
+    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
-    // let checkoutSessionID = await checkPaymentCompletedPromise();
-    // const result = await stripe.redirectToCheckout({
-    //   sessionId: checkoutSessionID,
-    // });
-
-    // if (result.error) {
-    //   alert(result.error.message);
-    // }else{
-    //   console.log("checkout session completed");
-    // }
-
-    router.push({
-      pathname: "/client/[name]",
-      query: {
-        name: username,
-        cart: JSON.stringify(cart),
-        cartPrice: cartTotalPrice,
-      },
+    let checkoutSessionID = await checkPaymentCompletedPromise();
+    const result = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionID,
     });
+
+    if (result.error) {
+      alert(result.error.message);
+    }else{
+      console.log("Payment Completed");
+    }
+
+    // router.push({
+    //   pathname: "/client/[name]",
+    //   query: {
+    //     name: username,
+    //     cart: JSON.stringify(cart),
+    //     cartPrice: cartTotalPrice,
+    //   },
+    // });
 
     
   }
@@ -200,8 +201,13 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     headers: { 'Content-Type': 'application/json' },
     mode: 'cors',
     body: JSON.stringify({
-      cart: cart,
-      redirectURL: "http://localhost:3000" + router.asPath,
+      cart: JSON.stringify(cart),
+      redirectURL: "http://localhost:3000/client/"+ username + "?"+ 
+      queryString.stringify({
+          // name: username,
+          cart: JSON.stringify(cart),
+          cartPrice: cartTotalPrice,
+      })
     }),
   }; 
 

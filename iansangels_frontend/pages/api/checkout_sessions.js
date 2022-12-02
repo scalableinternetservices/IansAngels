@@ -13,15 +13,12 @@ export default async function handler(req, res) {
   });
 
 
-  const redirectURL ='https://stripe-checkout-next-js-demo.vercel.app';
-
-
   
-  // const cart = JSON.parse(req.body);
-  console.log("Request pbject: " +req);
-  const cart = req.body.cart;
+  const cart = JSON.parse(req.body.cart);
   console.log("CART: "+cart);
-  console.log("Redirect To: "+req.body.redirectURL);
+
+  const redirectURL = req.body.redirectURL;
+  console.log("Success URL: "+ redirectURL);
 
   // if (req.method === 'POST') {
   //   try {
@@ -81,8 +78,8 @@ export default async function handler(req, res) {
     mode: 'payment',
     // success_url: req.body.redirectURL,
     // cancel_url: "localhost:3000/client/client",
-    success_url: redirectURL + '?status=success',
-    cancel_url: redirectURL + '?status=cancel',
+    success_url: redirectURL,
+    cancel_url: "http://localhost:3000/client/client",
     
   });
 
