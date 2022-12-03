@@ -14,6 +14,8 @@ import Container from "react-bootstrap/Container";
 
 // import { slide as Menu } from "react-burger-menu";
 import Cart from "../components/ShoppingCart/Cart/Cart"
+import { useRouter } from "next/router";
+
 
 
 // function App() {
@@ -32,6 +34,9 @@ export default function client() {
   const [ETA, setETA] = useState(0);
   const [orderSent, setOrderSent] = useState(false);
 
+  const router = useRouter();
+  const { status } = router.query;
+
   useEffect(() => {
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
     var endpoint = "/POS/menu";
@@ -48,8 +53,13 @@ export default function client() {
       });
   }, [])
 
-  
-  
+
+  var order = { 
+    "ETA": 0,
+    "username": "Ian",
+    "itemNames": [],
+  }
+
 
   // useEffect(() => {
   //   if(orderSent){

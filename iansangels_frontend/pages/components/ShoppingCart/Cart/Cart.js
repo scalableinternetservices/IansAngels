@@ -4,8 +4,13 @@ import { css, jsx, Global } from "@emotion/react";
 import Nav from 'react-bootstrap/Nav';
 // import Link from "next/link";
 import { useRouter } from "next/router";
-import Button from '@mui/material/Button';
+// import Button from '@mui/material/Button';
+import Button from '@mui/material';
 import Link from '@mui/material/Link';
+import { loadStripe } from '@stripe/stripe-js';
+import queryString from "query-string";
+
+
 // import Button from 'components/CustomButtons/Button.js';
 
 // import { ReactComponent as Right } from "../../Resources/image/arrowRight.svg";
@@ -19,13 +24,17 @@ import MenuData from "../../Menu/MenuData";
 import Container from "react-bootstrap/Container";
 import { create } from "@mui/material/styles/createTransitions";
 import Modal from 'react-bootstrap/Modal';
+import Stripe from "stripe";
+
 
 const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
 
   const [cartTotalPrice, setCartTotalPrice] = useState(0);
   const [username, setUsername] = useState("");
   const [modalOpen, setModalOpen] = useState(false);
-  const router = useRouter()
+  const [paymentCompleted, setPaymentCompleted] = useState(false);
+
+  const router = useRouter();
 
   const itemContainer = {
     hidden: { y: 20, opacity: 0 },
@@ -125,7 +134,7 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     body: JSON.stringify(order)
   }; 
 
-  const submitOrder = async () => {
+  const submitOrder = async (e) => {
     console.log("Submitting "+username+"'s cart" + cart);
     order.itemNames = cart.map(a => a.title);
     orderRequestOptions.body = JSON.stringify(order);
@@ -141,32 +150,82 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
     }
 
     console.log("Sending Orders")
-      var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-      var endpoint = "/POS/orders";
-      fetch(rails_url+endpoint,orderRequestOptions) //fetch with no options does a get request to that endpoint
-          .then(response => {
-            console.log(response.json());
-            // window.location.reload();
-          })
-          .catch(error => {
-            console.error('There was an error!', error);
-          });
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/POS/orders";
+    fetch(rails_url+endpoint,orderRequestOptions) //fetch with no options does a get request to that endpoint
+        .then(response => {
+          console.log(response.json());
+          // window.location.reload();
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+        });
 
-      console.log(cart);
+    console.log(cart);
 
-      router.push({
-        pathname: "/client/[name]",
-        query: {
-          name: username,
-          cart: JSON.stringify(cart),
-          cartPrice: cartTotalPrice,
-        },
-      });
+
+
+    // verify payment
+    const stripe = await loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
+    let checkoutSessionID = await checkPaymentCompletedPromise();
+    const result = await stripe.redirectToCheckout({
+      sessionId: checkoutSessionID,
+    });
+
+    if (result.error) {
+      alert(result.error.message);
+    }else{
+      console.log("Payment Completed");
+    }
+
+    // router.push({
+    //   pathname: "/client/[name]",
+    //   query: {
+    //     name: username,
+    //     cart: JSON.stringify(cart),
+    //     cartPrice: cartTotalPrice,
+    //   },
+    // });
+
     
   }
 
   function timeout(delay) {
     return new Promise( res => setTimeout(res, delay) );
+  }
+
+
+  var checkoutOptions = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    mode: 'cors',
+    body: JSON.stringify({
+      cart: JSON.stringify(cart),
+      redirectURL: "http://localhost:3000/client/"+ username + "?"+ 
+      queryString.stringify({
+          // name: username,
+          cart: JSON.stringify(cart),
+          cartPrice: cartTotalPrice,
+      })
+    }),
+  }; 
+
+  const checkPaymentCompletedPromise = function() {
+    console.log("directing to checkout page");
+    return new Promise(function (resolve, reject){
+      fetch("/api/checkout_sessions", checkoutOptions) //fetch with no options does a get request to that endpoint
+        .then(res => res.json())
+        .then((data) => {
+          console.log(data);
+          resolve(data.id);
+        })
+        .catch(error => {
+          console.error('There was an error!', error);
+          reject(error);
+        });
+
+    })
   }
 
   const checkUserExistPromise = function () {
@@ -293,59 +352,60 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
           </motion.div>
         ))}
         <motion.h5 className="item-title">Total Price: {cartTotalPrice}</motion.h5>
-        {/* <button onClick={routeChange}>Check Out</button> */}
-        {/* <Nav.Link href="/client/checkout">Check Out</Nav.Link> */}
-        {/* <button onClick={submitOrder}>Submit Order</button> */}
-        {/* <Link 
-          href={{
-            pathname:"/client/[name]", 
-            query: {
-              name: username,
-              cart: cart
-            },
-          }}
-          passHref legacyBehavior
-        >
-          <Button variant="contained" onClick={()=> submitOrder()}>
-            Submit Order
-          </Button>
-        </Link> */}
 
-        {/* <Link
-          component="button"
-          onClick={() => {submitOrder}}
-          href={{
-            pathname:"/client/[name]", 
-            query: {
-              name: username,
-              cart: cart
-            },
-          }}
-        >
-          Submit Order
-        </Link> */}
-
-        <form onSubmit={()=> submitOrder()}>
+        <form>
           <label>
             Name:
             <input type="text" value={username} onChange={handleSubmit}/>
           </label>
-          {/* <input type="submit" value="Save" /> */}
         </form>
-
+       
         <Link
           component="button"
           onClick={()=> submitOrder()}
-          href={{
-            pathname:"/client/[name]", 
-            query: {
-              name: username,
-              cart: cart
-            },
-          }}
+
         >
-          Submit Order
+          Check Out
         </Link>
+        {/* <form action="/api/checkout_sessions" method="POST">
+      <section>
+      <label>
+            Name:
+            <input type="text" value={username} onChange={handleSubmit}/>
+          </label>
+        <button type="submit" role="link">
+          Checkout
+        </button>
+      </section>
+      <style jsx>
+        {`
+          section {
+            background: #ffffff;
+            display: flex;
+            flex-direction: column;
+            width: 400px;
+            height: 112px;
+            border-radius: 6px;
+            justify-content: space-between;
+          }
+          button {
+            height: 36px;
+            background: #556cd6;
+            border-radius: 4px;
+            color: white;
+            border: 0;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0px 4px 5.5px 0px rgba(0, 0, 0, 0.07);
+          }
+          button:hover {
+            opacity: 0.8;
+          }
+        `}
+      </style>
+    </form> */}
+        
 
         
         </motion.div>
@@ -353,9 +413,6 @@ const Cart = ({cart, setCart, cartOpened, setCartOpened, setOrderSent}) =>{
       </Menu>
 
     </motion.div>
-
-    
-     
   );
 };
 
