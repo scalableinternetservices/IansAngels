@@ -11,6 +11,9 @@ import { loadStripe } from '@stripe/stripe-js';
 import {PaymentElement, useStripe, useElements} from "@stripe/react-stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
 
+import { CountdownCircleTimer } from 'react-countdown-circle-timer'
+import styles from './timer.module.css'
+
 export  const getServerSideProps= (context)=> {
   console.log(context.query);
     return {
@@ -52,62 +55,11 @@ const ETA = (props) => {
     const [cancelOrderModalOpen, setCancelOrderModalOpen] = useState(false);
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
 
-    const [cardNumber, setCardNumber] = useState(0);
-    const [balance, setBalance] = useState(50);
-    const [isOrderPaid, setIsOrderPaid] = useState(false);
-
-    const {asPath} = useRouter();
-
     const itemContainer = {
         hidden: { y: 20, opacity: 0 },
         visible: {
           y: 0,
           opacity: 1,
-        },
-      };
-
-    const styles = {
-        bmBurgerButton: {
-          position: "fixed",
-          width: "36px",
-          height: "30px",
-          right: "36px",
-          top: "72px",
-        },
-        bmBurgerBars: {
-          background: "#373a47",
-        },
-        bmBurgerBarsHover: {
-          background: "#a90000",
-        },
-        bmCrossButton: {
-          height: "24px",
-          width: "24px",
-        },
-        bmCross: {
-          background: "#bdc3c7",
-        },
-        bmMenuWrap: {
-          position: "fixed",
-          height: "100%",
-        },
-        bmMenu: {
-          background: "#373a47",
-          padding: "2.5em 1.5em 0",
-          fontSize: "1.15em",
-        },
-        bmMorphShape: {
-          fill: "#373a47",
-        },
-        bmItemList: {
-          color: "#b8b7ad",
-          padding: "0.8em",
-        },
-        bmItem: {
-          display: "inline-block",
-        },
-        bmOverlay: {
-          background: "rgba(0, 0, 0, 0)",
         },
       };
   
@@ -146,7 +98,7 @@ const ETA = (props) => {
                         if(order.attributes.person.username === props.name){
                             console.log("Person: "+order.attributes.person.username);
                             // checking if the ETA is updated
-                            if(order.attributes.ETA != 0){
+                            if(order.attributes.ETA != 0 && order.attributes.ETA !== ETA){
                                 setETA(order.attributes.ETA);
                                 setShowETA(true);
                                 console.log("ETA: "+ETA);
@@ -183,43 +135,15 @@ const ETA = (props) => {
       setCancelOrderModalOpen(true);
     }
 
-    const handlePayment = async (e) => {
-
-      e.preventDefault();
-      console.log("directing to payment page");
-
-      if (!stripe || !elements) {
-        // Stripe.js has not yet loaded.
-        // Make sure to disable form submission until Stripe.js has loaded.
-        return;
-      }
-  
-      setIsLoading(true);
-  
-      const { error } = await stripe.confirmPayment({
-        elements,
-        confirmParams: {
-          // Make sure to change this to your payment completion page
-          return_url: asPath,
-        },
-      });
-  
-      // This point will only be reached if there is an immediate error when
-      // confirming the payment. Otherwise, your customer will be redirected to
-      // your `return_url`. For some payment methods like iDEAL, your customer will
-      // be redirected to an intermediate site first to authorize the payment, then
-      // redirected to the `return_url`.
-      if (error.type === "card_error" || error.type === "validation_error") {
-        setMessage(error.message);
-      } else {
-        setMessage("An unexpected error occurred.");
-      }
-  
-      setIsLoading(false);
-    }
-
-    const paymentElementOptions = {
-      layout: "tabs",
+    const renderETA = ({ remainingTime }) => {
+    
+      return (
+        <div className={styles.timer}>
+          <div className={styles.text}> ETA: </div>
+          <div className={styles.value}>{ remainingTime }</div>
+          <div className={styles.text}>seconds</div>
+        </div>
+      );
     };
 
 
@@ -364,17 +288,68 @@ const ETA = (props) => {
         <div>
 
         
-       <h2> ETA: {showETA 
-       ? (<>  {ETA} Minutes  <br></br>
-        </>)
-       : (<> Order Processing  <br></br>
+       <h2> {showETA 
+       ? (!{modalOpen} ? (<> Order Status: Completed </>)
+              :(<> 
+                 <br></br>
+                    <CountdownCircleTimer
+                      isPlaying
+                      duration={ETA}
+                      colors={["#004777", "#F7B801", "#A30000", "#A30000"]}
+                      colorsTime={[10, 6, 3, 0]}
+                      onComplete={() => {setModalOpen(true)}}
+                    >
+
+                      {renderETA}
+                    </CountdownCircleTimer> </>)
+       )
+            
+       : (<> Order Status: Order Processing  <br></br>
        <Button variant="primary" onClick={()=>handleCancelOrder()}>
          Cancel Order
-        </Button> </>)} </h2>
+        </Button> </>)} 
+        </h2>
             
 
 
         </div>
+
+
+
+        <Global
+        styles={css`
+          @import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap");
+          ::selection {
+            background: #000;
+            color: #f0eff1;
+          }
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Poppins", sans-serif;
+            --webkit-tap-highlight-color: transparent;
+          }
+          body::-webkit-scrollbar {
+            width: 12px; /* width of the entire scrollbar */
+          }
+          body::-webkit-scrollbar-track {
+            background: #f0eff1; /* color of the tracking area */
+          }
+          body::-webkit-scrollbar-thumb {
+            background-color: #444444; /* color of the scroll thumb */
+            border-radius: 20px; /* roundness of the scroll thumb */
+            border: 3px solid #f0eff1; /* creates padding around scroll thumb */
+          }
+          body {
+            background: #f0eff1;
+          }
+          .container {
+            width: 80%;
+            margin: auto;
+          }
+        `}
+      />
 
 
         </motion.div>
