@@ -76,6 +76,43 @@ const ETA = (props) => {
         },
       };
 
+    useEffect(() => {
+      sendOrder();
+    }, []);
+
+    const sendOrder = () => {
+      var order = {
+        "ETA": 0,
+        // "username": props.name,
+        "username" : props.name,
+        "itemNames": [],
+      }
+  
+      var orderRequestOptions = {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(order)
+      }; 
+
+      console.log("Sending Orders");
+      order.itemNames = props.cart.map(a => a.title);
+      orderRequestOptions.body = JSON.stringify(order);
+      console.log("Order: " + order);
+      var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+      var endpoint = "/POS/orders";
+      fetch(rails_url+endpoint,orderRequestOptions) //fetch with no options does a get request to that endpoint
+          .then(response => {
+            console.log(response.json());
+            // window.location.reload();
+          })
+          .catch(error => {
+            console.error('There was an error!', error);
+          });
+
+      // console.log(cart);
+      
+    }
+
     useInterval(async () => {
         if(!cancelOrderModalOpen){
           fetchETA();
@@ -297,7 +334,10 @@ const ETA = (props) => {
                       duration={ETA}
                       colors={["#004777", "#F7B801", "#A30000", "#A30000"]}
                       colorsTime={[10, 6, 3, 0]}
-                      onComplete={() => {setModalOpen(true)}}
+                      onComplete={() => {
+                        setModalOpen(true),
+                        setShowETA(false);
+                      }}
                     >
 
                       {renderETA}
