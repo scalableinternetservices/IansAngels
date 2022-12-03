@@ -6,6 +6,7 @@ import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
+import Pagination from '@mui/material/Pagination';
 
 export default function Kitchen() {
   const [showEditModal, setShowEditModal] = useState(false);
@@ -14,6 +15,8 @@ export default function Kitchen() {
   const [editETAValue, setEditETAValue] = useState(0);
   const [completeOrder, setCompleteOrder] = useState(0);
   const [ordersJson, setOrdersJson] = useState([]);
+  const [numPages, setNumPages] = useState(0); //10 items per page
+  const [page, setPage] = useState(1);
 
 
   function useInterval(callback, delay) {
@@ -95,6 +98,8 @@ useInterval(async () => {
           let orders = data.data;
           orders.sort((a, b) => a.id - b.id);
           setOrdersJson(orders);
+          setNumPages(Math.ceil(data["data"].length/10));
+          setPage(1);
         })
       );
   };
@@ -109,6 +114,11 @@ useInterval(async () => {
     setEditETAValue(order.attributes.ETA);
     setShowEditModal(true);
   };
+
+  const changePage = (page) => {
+    console.log(page);
+    setPage(page);
+  }
 
   const complete = (order) => {
     setCompleteOrder(order);
@@ -151,7 +161,7 @@ useInterval(async () => {
             <tbody>
               {console.log(ordersJson)}
               {ordersJson &&
-                ordersJson.map((order, i) => {
+                ordersJson.slice((page-1)*10, Math.min(page*10, ordersJson.length)).map((order, i) => {
                   if (order.attributes.readyForKitchen)
                     return (
                       <tr>
@@ -192,6 +202,7 @@ useInterval(async () => {
                 })}
             </tbody>
           </table>
+          <Pagination count={numPages} color="primary" onChange={(e, page) => {changePage(page)}}/>
         </div>
       </div>
 

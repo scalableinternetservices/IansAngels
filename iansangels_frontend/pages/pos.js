@@ -12,9 +12,12 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
+import Pagination from '@mui/material/Pagination';
 
 export default function Pos() {
   const [orders_json, setOrders_json] = useState([]);
+  const [numPages, setNumPages] = useState(0); //10 items per page
+  const [page, setPage] = useState(1);
 
   function useInterval(callback, delay) {
     const savedCallback = useRef();
@@ -50,6 +53,8 @@ export default function Pos() {
       .then((response) =>
         response.json().then((data) => {
           setOrders_json(data["data"]);
+          setNumPages(Math.ceil(data["data"].length/10));
+          setPage(1);
           setLoading(false);
         })
       );
@@ -123,6 +128,11 @@ export default function Pos() {
     console.log("edit eta " + i);
     handleShow();
   };
+
+  const changePage = (page) => {
+    console.log(page);
+    setPage(page);
+  }
 
   const sendToKitchen = (i) => {
     const uname = orders_json[i]["attributes"]["person"]["username"];
@@ -204,11 +214,11 @@ export default function Pos() {
             </tr>
           </thead>
           <tbody>
-            {orders_json.map((order, i) => {
+            {orders_json.slice((page-1)*10, Math.min(page*10, orders_json.length)).map((order, i) => {
               return (
                 <tr>
                   <td scope="row" width="10%">
-                    {i + 1}
+                    {(page-1)*10 + i + 1}
                   </td>
                   <td width="10%">
                     {order["attributes"]["person"]["username"]}
@@ -231,7 +241,7 @@ export default function Pos() {
                       variant="primary"
                       disabled={order["attributes"]["readyForKitchen"]}
                       onClick={(e) => {
-                        sendToKitchen(i);
+                        sendToKitchen((page-1)*10 + i);
                       }}
                     >
                       Send
@@ -241,7 +251,7 @@ export default function Pos() {
                     <Button
                       variant="primary"
                       onClick={(e) => {
-                        editETA(i);
+                        editETA((page-1)*10 + i);
                       }}
                     >
                       Edit ETA
@@ -251,7 +261,7 @@ export default function Pos() {
                     <Button
                       variant="success"
                       onClick={(e) => {
-                        deleteOrder(i);
+                        deleteOrder((page-1)*10 + i);
                       }}
                     >
                       Mark Completed
@@ -262,6 +272,7 @@ export default function Pos() {
             })}
           </tbody>
         </table>
+        <Pagination count={numPages} color="primary" onChange={(e, page) => {changePage(page)}}/>
       </div>
       <Modal show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>

@@ -12,12 +12,15 @@ import Navbar from 'react-bootstrap/Navbar';
 import NavDropdown from 'react-bootstrap/NavDropdown';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import Pagination from '@mui/material/Pagination';
 
 
 
 export default function PosMenus() {
 
     const [menus_json, setMenus_json] = useState([]);
+    const [numPages, setNumPages] = useState(0); //10 items per page
+    const [page, setPage] = useState(1);
 
     useEffect(() => {
         var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
@@ -26,6 +29,7 @@ export default function PosMenus() {
             .then(response => 
                 response.json().then(data => {
                     setMenus_json(data["data"])
+                    setNumPages(Math.ceil(data["data"].length/10));
                     setLoading(false);
             }))
     }, [])
@@ -154,6 +158,11 @@ export default function PosMenus() {
       setEditNum(i);
       console.log("edit menu item " + i);
       handleShow();
+    }
+
+    const changePage = (page) => {
+      console.log(page);
+      setPage(page);
     }
 
 
@@ -306,10 +315,10 @@ export default function PosMenus() {
                   </tr>
               </thead>
               <tbody>
-                  {menus_json.map((menu, i) => {
+                  {menus_json.slice((page-1)*10, Math.min(page*10, menus_json.length)).map((menu, i) => {
                       return (
                           <tr>
-                              <td scope="row" width="5%">{i+1}</td>
+                              <td scope="row" width="5%">{(page-1)*10+i+1}</td>
                               <td width="10%">{menu["attributes"]["itemName"]}</td>
                               <td width="20%">{menu["attributes"]["description"]}</td>
                               <td className="text-center" width="15%">
@@ -327,16 +336,17 @@ export default function PosMenus() {
                               }</td>
                               <td className="text-center" width="10%">{menu["attributes"]["imageURL"]}</td>
                               <td className="text-center" width="10%">
-                                  <Button variant="secondary" onClick={(e) => {editMenu(i)}}>Edit Item</Button>
+                                  <Button variant="secondary" onClick={(e) => {editMenu((page-1)*10 + i)}}>Edit Item</Button>
                               </td>
                               <td className="text-center" width="10%">
-                                  <Button variant="danger" onClick={(e) => {deleteMenu(i)}}>Delete Item</Button>
+                                  <Button variant="danger" onClick={(e) => {deleteMenu((page-1)*10 + i)}}>Delete Item</Button>
                               </td>
                           </tr>
                       )
                   })}
               </tbody>
           </table>
+          <Pagination count={numPages} color="primary" onChange={(e, page) => {changePage(page)}}/>
         </div>
         <Modal show={showModal} onHide={handleClose}>
           <Modal.Header closeButton>
