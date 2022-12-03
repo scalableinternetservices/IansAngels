@@ -11,7 +11,7 @@ const Navbar = ({ setAll, setBreakfast, setLunch, setShakes }) => {
   return (
     <div
       className="Navbar"
-      style={{ marginRight: "80px", paddingTop: "70px" }}
+      style={{ marginRight: "80px", paddingTop: "40px" }}
       css={css`
         display: flex;
         justify-content: space-around;
