@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect,useRef } from "react";
 
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -14,6 +14,30 @@ export default function Kitchen() {
   const [editETAValue, setEditETAValue] = useState(0);
   const [completeOrder, setCompleteOrder] = useState(0);
   const [ordersJson, setOrdersJson] = useState([]);
+
+
+  function useInterval(callback, delay) {
+    const savedCallback = useRef() ;
+    useEffect(() => { 
+        savedCallback.current = callback;
+    }, [callback]);
+    // Set up the interval.
+    useEffect(() => {
+        function tick() {
+            savedCallback.current();
+        }
+        if (delay !== null) {
+            const id = setInterval(tick, delay);
+            return () => {
+                clearInterval(id);
+            }
+        }
+    }, [callback, delay]);
+}
+
+useInterval(async () => {
+    getOrders();
+}, 2000)
 
   const handleETAChange = (event) => {
     setEditETAValue(event.target.value);
