@@ -104,6 +104,8 @@ class OrdersController < ApplicationController
             order.itemNames.append("")
         end
 
+        order.readyForKitchen = false
+
         if order.save
             render json: OrderSerializer.new(order).serialized_json
         else
@@ -325,6 +327,12 @@ class OrdersController < ApplicationController
             order.ETA = 0
         end
 
+        if request.request_parameters["readyForKitchen"] != nil
+            order.readyForKitchen = request.request_parameters["readyForKitchen"]
+        else
+            order.readyForKitchen = false
+        end
+
         if order.save
             render json: OrderSerializer.new(order).serialized_json
         else
@@ -344,6 +352,11 @@ class OrdersController < ApplicationController
 
         if order == nil
             print "This user does not have a current order placed, please create an order!"
+            return
+        end
+
+        if order.readyForKitchen == true
+            print "this order is already in the kitchen and unfortunately cannot be cancelled!"
             return
         end
 
@@ -424,7 +437,7 @@ class OrdersController < ApplicationController
     private
 
     def order_params
-        params.require(:order).permit(:ETA, :person_id, :itemNames => [])
+        params.require(:order).permit(:readyForKitchen, :ETA, :person_id, :itemNames => [])
     end
 
     def person_params
