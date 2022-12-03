@@ -323,14 +323,10 @@ class OrdersController < ApplicationController
 
         if request.request_parameters["ETA"] != nil
             order.ETA = request.request_parameters["ETA"]
-        else
-            order.ETA = 0
         end
 
         if request.request_parameters["readyForKitchen"] != nil
             order.readyForKitchen = request.request_parameters["readyForKitchen"]
-        else
-            order.readyForKitchen = false
         end
 
         if order.save
