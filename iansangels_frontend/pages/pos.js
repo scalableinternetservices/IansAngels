@@ -226,7 +226,9 @@ export default function Pos() {
                   <td width="10%">
                     <ul>
                       {order["attributes"]["itemNames"].map((item) => {
-                        return <li>{item}</li>;
+                        if(item.length !== 0){
+                          return <li>{item}</li>;
+                        }
                       })}
                     </ul>
                   </td>

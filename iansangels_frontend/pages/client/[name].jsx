@@ -54,6 +54,7 @@ const ETA = (props) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [cancelOrderModalOpen, setCancelOrderModalOpen] = useState(false);
     const [paymentModalOpen, setPaymentModalOpen] = useState(false);
+    const [dontGoTwice, setDontGoTwice] = useState(true);
 
     const itemContainer = {
         hidden: { y: 20, opacity: 0 },
@@ -77,7 +78,11 @@ const ETA = (props) => {
       };
 
     useEffect(() => {
-      sendOrder();
+      if(dontGoTwice){
+        sendOrder();
+        setDontGoTwice(false);
+      }
+      
     }, []);
 
     const sendOrder = () => {

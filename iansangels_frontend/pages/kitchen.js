@@ -170,7 +170,9 @@ useInterval(async () => {
                         <td width="20%">
                           <ul>
                             {order.attributes.itemNames.map((item) => {
-                              return <li>{item}</li>;
+                              if(item.length !== 0){
+                                return <li>{item}</li>;
+                              }
                             })}
                           </ul>
                         </td>
