@@ -13,13 +13,14 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 
 // import { slide as Menu } from "react-burger-menu";
-import Cart from "../components/ShoppingCart/Cart/Cart"
-import { useRouter } from "next/router";
+import Cart from "../components/ShoppingCart/Cart/Cart";
+import { useRouter, withRouter } from "next/router";
+import { PropaneSharp } from "@mui/icons-material";
 
-
+import Cookies from "js-cookie";
 
 // function App() {
-export default function client() {
+function client(props) {
   const [all, setAll] = useState(true);
   const [breakfast, setBreakfast] = useState(false);
   const [lunch, setLunch] = useState(false);
@@ -37,36 +38,39 @@ export default function client() {
   const router = useRouter();
   const { status } = router.query;
 
+  const [user, setUser] = useState("");
+
   useEffect(() => {
+    setUser(Cookies.get("user"));
+
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
     var endpoint = "/POS/menu";
-    fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
-      .then(response => 
-          response.json().then(data => {
-            setMenus_json(data["data"])
-            setLoading(false);
-            console.log(menus_json)
-            // MenuData = JSON.parse(menus_json); 
-      }))
-      .catch(error => {
-        console.error('There was an error!', error);
+    fetch(rails_url + endpoint) //fetch with no options does a get request to that endpoint
+      .then((response) =>
+        response.json().then((data) => {
+          setMenus_json(data["data"]);
+          setLoading(false);
+          console.log(menus_json);
+          // MenuData = JSON.parse(menus_json);
+        })
+      )
+      .catch((error) => {
+        console.error("There was an error!", error);
       });
-  }, [])
+  }, []);
 
-
-  var order = { 
-    "ETA": 0,
-    "username": "Ian",
-    "itemNames": [],
-  }
-
+  var order = {
+    ETA: 0,
+    username: "Ian",
+    itemNames: [],
+  };
 
   // useEffect(() => {
   //   if(orderSent){
   //     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
   //     var endpoint = "/POS/orders";
   //     fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
-  //         .then(response => 
+  //         .then(response =>
   //             response.json().then(data => {
   //             setETA(data["data"])
   //         }))
@@ -78,8 +82,8 @@ export default function client() {
 
   const [loading, setLoading] = useState(true);
 
-  if(loading){
-    return <h1>Loading</h1>
+  if (loading) {
+    return <h1>Loading</h1>;
   }
 
   return (
@@ -105,6 +109,7 @@ export default function client() {
           setBreakfast={setBreakfast}
           setLunch={setLunch}
           setShakes={setShakes}
+          user={user}
         />
 
         <MenuItems
@@ -116,6 +121,9 @@ export default function client() {
           cart={cart}
           setCartOpened={setCartOpened}
         />
+        {props.router.query && props.router.query.user && (
+          <div>{props.router.query.user.email}</div>
+        )}
       </div>
 
       <Global
@@ -156,4 +164,4 @@ export default function client() {
   );
 }
 
-// export default App;
+export default withRouter(client);

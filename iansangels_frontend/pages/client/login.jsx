@@ -6,12 +6,17 @@ import MenuItems from "../components/Menu/MenuItems";
 // import MenuData from "./components/Menu/MenuData";
 // import {menuData} from "./components/MenuData";
 import Navbar from "../components/Menu/Navbar";
+import Alert from "react-bootstrap/Alert";
 
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 // import { slide as Menu } from "react-burger-menu";
 import Cart from "../components/ShoppingCart/Cart/Cart";
 import { motion } from "framer-motion";
+
+import Router, { withRouter } from "next/router";
+
+import jsCookie from "js-cookie";
 
 // function App() {
 export default function login() {
@@ -21,10 +26,6 @@ export default function login() {
       opacity: 1,
     },
   };
-
-  const breakpoints = [576, 768, 992, 1200];
-
-  const mq = breakpoints.map((bp) => `@media (max-width: ${bp}px)`);
   const [all, setAll] = useState(true);
   const [breakfast, setBreakfast] = useState(false);
   const [lunch, setLunch] = useState(false);
@@ -33,11 +34,14 @@ export default function login() {
   const [cart, setCart] = useState([]);
   const [cartOpened, setCartOpened] = useState(false);
   const [overlap, setOverlap] = useState(false);
+  const breakpoints = [576, 768, 992, 1200];
+
+  const mq = breakpoints.map((bp) => `@media (max-width: ${bp}px)`);
 
   const [menus_json, setMenus_json] = useState([]);
-
-  const [ETA, setETA] = useState(0);
-  const [orderSent, setOrderSent] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [failed, setFailed] = useState(false);
 
   useEffect(() => {
     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
@@ -56,22 +60,39 @@ export default function login() {
       });
   }, []);
 
-  // useEffect(() => {
-  //   if(orderSent){
-  //     var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
-  //     var endpoint = "/POS/orders";
-  //     fetch(rails_url+endpoint) //fetch with no options does a get request to that endpoint
-  //         .then(response =>
-  //             response.json().then(data => {
-  //             setETA(data["data"])
-  //         }))
-  //         .catch(error => {
-  //           console.error('There was an error!', error);
-  //         });
-  //     }
-  // }, [])
-
   const [loading, setLoading] = useState(true);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    var rails_url = "http://localhost:3001"; //might need to use 0.0.0.0 instead of localhost on elastic beanstalk
+    var endpoint = "/person";
+    fetch(rails_url + endpoint) //fetch with no options does a get request to that endpoint
+      .then((response) =>
+        response.json().then((data) => {
+          console.log(data.data);
+          const people = data.data;
+          console.log(people);
+          for (var p of people) {
+            console.log(p);
+            if (
+              p.attributes.email.toLowerCase() == email.toLocaleLowerCase() &&
+              p.attributes.password == password
+            ) {
+              setFailed(false);
+
+              jsCookie.set("user", p.attributes.username);
+              Router.push({
+                pathname: "/client/client",
+              });
+            }
+          }
+          setFailed(true);
+        })
+      )
+      .catch((error) => {
+        console.error("There was an error!", error);
+      });
+  };
 
   if (loading) {
     return <h1>Loading</h1>;
@@ -171,10 +192,18 @@ export default function login() {
           `}
         >
           <div style={{ margin: "auto", width: "50%", padding: "10px" }}>
-            <Form>
+            <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3" controlId="formBasicEmail">
                 <Form.Label>Email address</Form.Label>
-                <Form.Control type="email" placeholder="Enter email" />
+                <Form.Control
+                  type="email"
+                  placeholder="Enter email"
+                  value={email}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setEmail(e.target.value);
+                  }}
+                />
                 <Form.Text className="text-muted">
                   We'll never share your email with anyone else.
                 </Form.Text>
@@ -182,14 +211,24 @@ export default function login() {
 
               <Form.Group className="mb-3" controlId="formBasicPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control type="password" placeholder="Password" />
-              </Form.Group>
-              <Form.Group className="mb-3" controlId="formBasicCheckbox">
-                <Form.Check type="checkbox" label="Check me out" />
+                <Form.Control
+                  type="password"
+                  placeholder="Password"
+                  value={password}
+                  onChange={(e) => {
+                    e.preventDefault();
+                    setPassword(e.target.value);
+                  }}
+                />
               </Form.Group>
               <Button variant="primary" type="submit">
                 Submit
               </Button>
+              {failed && (
+                <Alert variant={"danger"} style={{ marginTop: 25 }}>
+                  Login failed. Please try again.
+                </Alert>
+              )}
             </Form>
           </div>
         </motion.div>

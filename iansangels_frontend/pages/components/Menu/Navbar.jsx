@@ -1,9 +1,14 @@
 /**@jsxRuntime classic */
 /**@jsx jsx */
 import { css, jsx } from "@emotion/react";
+import { PropaneSharp } from "@mui/icons-material";
+import { Button } from "@mui/material";
 import Buttons from "./Buttons";
+import React from "react";
+import jsCookie from "js-cookie";
+import Router, { withRouter } from "next/router";
 
-const Navbar = ({ setAll, setBreakfast, setLunch, setShakes }) => {
+const Navbar = ({ setAll, setBreakfast, setLunch, setShakes, user }) => {
   const breakpoints = [576, 768, 992, 1200];
 
   const mq = breakpoints.map((bp) => `@media (max-width: ${bp}px)`);
@@ -58,7 +63,29 @@ const Navbar = ({ setAll, setBreakfast, setLunch, setShakes }) => {
         setLunch={setLunch}
         setShakes={setShakes}
       />
-      <h3 className="dwu">Online Ordering</h3>
+      {user ? (
+        <>
+          <h4>Welcome, {user} </h4>
+          <Button
+            onClick={() => {
+              jsCookie.set("user", "");
+              window.location.reload();
+            }}
+          >
+            Logout
+          </Button>
+        </>
+      ) : (
+        <Button
+          onClick={() => {
+            Router.push({
+              pathname: "/client/login",
+            });
+          }}
+        >
+          Log In
+        </Button>
+      )}
     </div>
   );
 };
