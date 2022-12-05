@@ -16,6 +16,21 @@ class InventoryController < ApplicationController
         render json: inventory
     end
 
+    def paginated
+        inventory = Inventory.all
+        #menu = Menu.all
+        #orders = Order.all
+
+        #menuJSON = MenuSerializer.new(menu).serialized_json
+        #ordersJSON = OrderSerializer.new(orders).serialized_json
+        #inventoryJSON = InventorySerializer.new(inventory).serialized_json
+
+        #total = menuJSON + ordersJSON + inventoryJSON
+        inventory = InventorySerializer.new(inventory).paginate(page: params[:id], per_page: 10).serialized_json
+
+        render json: inventory
+    end
+
     def show
         inventory = Inventory.find_by(id: params[:id])
         render json: InventorySerializer.new(inventory).serialized_json
