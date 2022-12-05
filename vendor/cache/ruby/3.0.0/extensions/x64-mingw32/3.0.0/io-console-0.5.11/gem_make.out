@@ -1,0 +1,19 @@
+current directory: C:/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/io-console-0.5.11/ext/io/console
+C:/Ruby30-x64/bin/ruby.exe -I C:/Ruby30-x64/lib/ruby/3.0.0 -r ./siteconf20221205-137144-a62vog.rb extconf.rb
+checking for HAVE_RUBY_FIBER_SCHEDULER_H... no
+checking for rb_scheduler_timeout()... yes
+checking for rb_io_wait()... yes
+creating Makefile
+
+current directory: C:/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/io-console-0.5.11/ext/io/console
+make DESTDIR\= clean
+
+current directory: C:/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/io-console-0.5.11/ext/io/console
+make DESTDIR\=
+generating console-x64-mingw32.def
+compiling console.c
+linking shared-object io/console.so
+
+current directory: C:/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/io-console-0.5.11/ext/io/console
+make DESTDIR\= install
+/usr/bin/install -c -m 0755 console.so ./.gem.20221205-137144-nq0ju8/io

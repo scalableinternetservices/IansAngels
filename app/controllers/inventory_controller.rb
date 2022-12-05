@@ -26,9 +26,7 @@ class InventoryController < ApplicationController
         #inventoryJSON = InventorySerializer.new(inventory).serialized_json
 
         #total = menuJSON + ordersJSON + inventoryJSON
-        inventory = InventorySerializer.new(inventory).paginate(page: params[:id], per_page: 10).serialized_json
-
-        render json: inventory
+        render json: InventorySerializer.new(inventory.paginate(page: params[:id])).serialized_json
     end
 
     def show

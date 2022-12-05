@@ -1,0 +1,19 @@
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/websocket-driver-0.7.5/ext/websocket-driver
+/home/erwan/.rbenv/versions/3.0.4/bin/ruby -I /home/erwan/.rbenv/versions/3.0.4/lib/ruby/3.0.0 -r ./siteconf20221205-2116-4xq9se.rb extconf.rb
+creating Makefile
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/websocket-driver-0.7.5/ext/websocket-driver
+make DESTDIR\= clean
+make: Warning: File 'Makefile' has modification time 0.042 s in the future
+make: warning:  Clock skew detected.  Your build may be incomplete.
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/websocket-driver-0.7.5/ext/websocket-driver
+make DESTDIR\=
+compiling websocket_mask.c
+linking shared-object websocket_mask.so
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/websocket-driver-0.7.5/ext/websocket-driver
+make DESTDIR\= install
+make: Warning: File 'websocket_mask.so' has modification time 0.061 s in the future
+/usr/bin/install -c -m 0755 websocket_mask.so ./.gem.20221205-2116-6q7jkd
+make: warning:  Clock skew detected.  Your build may be incomplete.
