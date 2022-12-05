@@ -2,7 +2,7 @@ require 'json'
 
 class InventoryController < ApplicationController
     def index
-        #inventory = Inventory.all
+        inventory = Inventory.all
         #menu = Menu.all
         #orders = Order.all
 
