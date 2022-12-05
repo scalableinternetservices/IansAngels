@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   get 'client', to: 'menu#index'
   get 'POS/inventory', to: 'inventory#index'
 
-  get 'POS/inventory_paginated/:id', to 'inventory#paginated'
+  get 'POS/inventory_paginated/:id', to: 'inventory#paginated'
 
   get 'POS/menu', to: 'menu#index'
   get 'POS/orders', to: 'orders#index'
