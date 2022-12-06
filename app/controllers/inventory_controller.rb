@@ -16,6 +16,38 @@ class InventoryController < ApplicationController
         render json: inventory
     end
 
+    def paginated
+        inventory = Inventory.all.offset((params[:id].to_i - 1) * 10).limit(10)
+        # print("LOOK BELOW")
+        # print(inventory)
+        # print("LOOK ABOVE")
+
+        # print("LOOK BELOW")
+        # print(params[:id])
+        # print(params[:id].class)
+        # print("LOOK ABOVE")
+
+        # print("LOOK BELOW")
+        # print(inventory.class)
+        # print("LOOK ABOVE")
+        # inventory["data"] = inventory["data"].slice((params[:id].to_i - 1) * 2, 2)
+
+        # print("LOOK BELOW")
+        # print(inventory)
+        # print("LOOK ABOVE")
+        #menu = Menu.all
+        #orders = Order.all
+
+        #menuJSON = MenuSerializer.new(menu).serialized_json
+        #ordersJSON = OrderSerializer.new(orders).serialized_json
+        #inventoryJSON = InventorySerializer.new(inventory).serialized_json
+
+        #total = menuJSON + ordersJSON + inventoryJSON
+        inventory = InventorySerializer.new(inventory).serialized_json
+
+        render json: inventory
+    end
+
     def show
         inventory = Inventory.find_by(id: params[:id])
         render json: InventorySerializer.new(inventory).serialized_json

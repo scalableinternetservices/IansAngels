@@ -14,6 +14,8 @@ Rails.application.routes.draw do
   get 'person/:id', to: 'person#show'
   get 'POS/sales', to: 'inventory#sales'
 
+  get 'POS/inventory_paginated/:id', to: 'inventory#paginated'
+
   # show
   get 'kitchen/:id', to: 'orders#show'
   get 'client/:id', to: 'menu#show'
