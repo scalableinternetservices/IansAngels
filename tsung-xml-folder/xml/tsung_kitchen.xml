@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/local/share/tsung/tsung-1.0.dtd" [] >
+<tsung loglevel="notice">
+  <clients>
+    <client host="localhost" maxusers="32768" use_controller_vm="true" />
+  </clients>
+
+  <servers>
+    <server host="base-t3-micro.eba-me6kbnmd.us-west-2.elasticbeanstalk.com" port="80" type="tcp"></server>
+  </servers>
+
+  <load>
+    <arrivalphase phase="1" duration="5" unit="second">
+      <users arrivalrate="2" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="2" duration="5" unit="second">
+      <users arrivalrate="4" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="3" duration="5" unit="second">
+      <users arrivalrate="8" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="4" duration="5" unit="second">
+      <users arrivalrate="16" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="5" duration="5" unit="second">
+      <users arrivalrate="32" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="6" duration="5" unit="second">
+      <users arrivalrate="64" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="7" duration="5" unit="second">
+      <users arrivalrate="128" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="8" duration="5" unit="second">
+      <users arrivalrate="256" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="9" duration="5" unit="second">
+      <users arrivalrate="512" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="10" duration="5" unit="second">
+      <users arrivalrate="1024" unit="second"></users>
+    </arrivalphase>
+  </load>
+  
+  <options>
+    <!-- Set connection timeout to 2 seconds -->
+    <option name="global_ack_timeout" value="2000"></option>
+  </options>
+
+  <sessions>
+    <!-- workflow2: kitchen worker -->
+    <session name="kitchen workflow" type="ts_http" weight="1">
+      <!-- 1. go to kitchen page -->
+      <request><http method="GET" url="/kitchen"></http></request>
+      <!-- 2. modify ETA -->
+      <request>
+        <http 
+            method="PATCH" 
+            version="1.1"
+            url="/kitchen"
+            content_type="application/x-www-form-urlencoded"
+            contents="ETA=20&amp;itemNames=mashed%20potatoes%20and%208%20oz%20steak&amp;username=Erwan">
+        </http>
+      </request>
+      <!-- 3. mark order as complete as they are finished cooking -->
+      <request>
+        <http 
+            method="DELETE"
+            version="1.1" 
+            url="/kitchen"
+            content_type="application/x-www-form-urlencoded"
+            contents="username=Erwan">
+        </http>
+      </request>
+      <!-- create a new order for the same user -->
+      <request>
+        <http 
+            method="POST"
+            version="1.1" 
+            url="/POS/orders"
+            content_type="application/x-www-form-urlencoded"
+            contents="ETA=10&amp;itemNames=mashed%20potatoes%20and%208%20oz%20steak&amp;username=Erwan">
+        </http>
+      </request>
+      <!-- read in external files  -->
+    </session>
+  </sessions>
+</tsung>

@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<!DOCTYPE tsung SYSTEM "/usr/local/share/tsung/tsung-1.0.dtd" [] >
+<tsung loglevel="notice">
+  <clients>
+    <client host="localhost" maxusers="32768" use_controller_vm="true" />
+  </clients>
+
+  <servers>
+    <server host="4t3micro1dbt3mirc.eba-me6kbnmd.us-west-2.elasticbeanstalk.com" port="80" type="tcp"></server>
+  </servers>
+
+  <monitor batch="true" host="torque" type="erlang"></monitor>
+
+  <load>
+    <arrivalphase phase="1" duration="5" unit="second">
+      <users arrivalrate="2" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="2" duration="5" unit="second">
+      <users arrivalrate="4" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="3" duration="5" unit="second">
+      <users arrivalrate="8" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="4" duration="5" unit="second">
+      <users arrivalrate="16" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="5" duration="5" unit="second">
+      <users arrivalrate="32" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="6" duration="5" unit="second">
+      <users arrivalrate="64" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="7" duration="5" unit="second">
+      <users arrivalrate="128" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="8" duration="5" unit="second">
+      <users arrivalrate="256" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="9" duration="5" unit="second">
+      <users arrivalrate="512" unit="second"></users>
+    </arrivalphase>
+    <arrivalphase phase="10" duration="5" unit="second">
+      <users arrivalrate="1024" unit="second"></users>
+    </arrivalphase>
+  </load>
+  
+  <options>
+    <!-- Set connection timeout to 2 seconds -->
+    <option name="global_ack_timeout" value="2000"></option>
+  </options>
+
+  <sessions>
+    <!-- workflow 1: client workflow -->
+    <session name="client workflow" probability="50" type="ts_http">
+      <!-- 1. go to client page -->
+      <request><http method="GET" url="/POS/menu"></http></request>
+      <!-- wait for 10 seconds for user to look through the menu and submit the order-->
+      <!-- <thinktime value="10" random="true"/> -->
+      <!-- 2. create a new user -->
+      <setdynvars sourcetype="random_string" length="9">
+        <var name="rndstr" />
+      </setdynvars>
+
+      
+      <request>
+        <http 
+          method="POST" 
+          version="1.1"
+          url="/createuser"
+          content_type="application/x-www-form-urlencoded"
+          contents="username=%%_rndstr%%&amp;password=Password1234&amp;email=random_User_app%40gmail.com&amp;position=client&amp;completedOrders=">
+        </http>
+      </request>
+      <!-- 3. user submits an order  -->
+      <request>
+        <http 
+          method="POST"
+          version="1.1"
+          url="/POS/orders"
+          content_type="application/x-www-form-urlencoded"
+          contents="ETA=10&amp;itemNames=Cookies%20and%20milk&amp;username=%%_rndstr%%">
+        </http>
+      </request>  
+      
+    
+      <!-- <request>
+        <http 
+          method="POST"
+          version="1.1"
+          url="/POS/orders"
+          content_type="application/x-www-form-urlencoded"
+          contents="ETA=10&amp;itemNames=Cookies%20and%20milk&amp;username=Erwan">
+        </http>
+      </request> -->
+
+      <!-- 4. fetch ETA  -->
+      <request><http method="GET" url="/POS/orders"></http></request>      
+    </session>
+
+    <!-- workflow2: kitchen worker -->
+    <session name="kitchen workflow" type="ts_http" probability="25">
+      <!-- 1. go to kitchen page -->
+      <request><http method="GET" url="/kitchen"></http></request>
+      <!-- 2. modify ETA -->
+      <request>
+        <http 
+            method="PATCH" 
+            version="1.1"
+            url="/kitchen"
+            content_type="application/x-www-form-urlencoded"
+            contents="ETA=20&amp;itemNames=mashed%20potatoes%20and%208%20oz%20steak&amp;username=Erwan">
+        </http>
+      </request>
+      <!-- 3. mark order as complete as they are finished cooking -->
+      <request>
+        <http 
+            method="DELETE"
+            version="1.1" 
+            url="/kitchen"
+            content_type="application/x-www-form-urlencoded"
+            contents="username=Erwan">
+        </http>
+      </request>
+      <!-- create a new order for the same user -->
+      <request>
+        <http 
+            method="POST"
+            version="1.1" 
+            url="/POS/orders"
+            content_type="application/x-www-form-urlencoded"
+            contents="ETA=10&amp;itemNames=mashed%20potatoes%20and%208%20oz%20steak&amp;username=Erwan">
+        </http>
+      </request>
+      <!-- read in external files  -->
+    </session>
+
+    <!-- workflow3: admin -->
+    <session name="admin workflow" type="ts_http" probability="25">
+      <!-- 1. go to pos/orders page -->
+      <request><http method="GET" url="/POS/orders"></http></request>
+      <!-- wait for 3 seconds to look at how many current orders -->
+      <!-- <thinktime value="3" random="true"/> -->
+      <!-- 3. go to pos/inventory -->
+      <request><http method="GET" url="/POS/inventory"></http></request>
+      <!-- wait for 3 seconds to see if we have enough food for orders -->
+      <!-- <thinktime value="3" random="true"/> -->
+      <!-- 4. go to POS/sales -->
+      <request><http method="GET" url="/POS/sales"></http></request>
+      <!-- wait for 3 seconds to look at the sales -->
+      <!-- <thinktime value="3" random="true"/> -->
+    </session>
+  </sessions>
+</tsung>
