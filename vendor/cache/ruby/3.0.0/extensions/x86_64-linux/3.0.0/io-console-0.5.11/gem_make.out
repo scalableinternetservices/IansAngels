@@ -1,0 +1,27 @@
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/io-console-0.5.11/ext/io/console
+/home/erwan/.rbenv/versions/3.0.4/bin/ruby -I /home/erwan/.rbenv/versions/3.0.4/lib/ruby/3.0.0 -r ./siteconf20221205-3568-pssy21.rb extconf.rb
+Ignoring bootsnap-1.13.0 because its extensions are not built. Try: gem pristine bootsnap --version 1.13.0
+Ignoring debug-1.6.2 because its extensions are not built. Try: gem pristine debug --version 1.6.2
+Ignoring io-console-0.5.11 because its extensions are not built. Try: gem pristine io-console --version 0.5.11
+Ignoring msgpack-1.6.0 because its extensions are not built. Try: gem pristine msgpack --version 1.6.0
+Ignoring nio4r-2.5.8 because its extensions are not built. Try: gem pristine nio4r --version 2.5.8
+Ignoring racc-1.6.0 because its extensions are not built. Try: gem pristine racc --version 1.6.0
+Ignoring websocket-driver-0.7.5 because its extensions are not built. Try: gem pristine websocket-driver --version 0.7.5
+checking for termios.h... yes
+checking for cfmakeraw() in termios.h... yes
+checking for sys/ioctl.h... yes
+checking for HAVE_RUBY_FIBER_SCHEDULER_H... no
+checking for rb_scheduler_timeout()... no
+creating Makefile
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/io-console-0.5.11/ext/io/console
+make DESTDIR\= clean
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/io-console-0.5.11/ext/io/console
+make DESTDIR\=
+compiling console.c
+linking shared-object io/console.so
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/io-console-0.5.11/ext/io/console
+make DESTDIR\= install
+/usr/bin/install -c -m 0755 console.so ./.gem.20221205-3568-vr7p2p/io

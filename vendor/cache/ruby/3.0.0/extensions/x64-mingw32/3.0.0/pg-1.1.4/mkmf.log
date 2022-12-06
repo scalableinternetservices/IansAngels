@@ -1,0 +1,35 @@
+find_executable: checking for pg_config... -------------------- no
+
+--------------------
+
+find_header: checking for libpq-fe.h... -------------------- no
+
+"gcc -o conftest.exe -IC:/Ruby30-x64/include/ruby-3.0.0/x64-mingw32 -IC:/Ruby30-x64/include/ruby-3.0.0/ruby/backward -IC:/Ruby30-x64/include/ruby-3.0.0 -I. -D__USE_MINGW_ANSI_STDIO=1 -DFD_SETSIZE=2048 -D_WIN32_WINNT=0x0600 -D__MINGW_USE_VC2005_COMPAT -D_FILE_OFFSET_BITS=64  -O3 -fno-fast-math -fstack-protector-strong conftest.c  -L. -LC:/Ruby30-x64/lib -L. -pipe -s -fstack-protector-strong -Wl,--no-as-needed  -m64   -lx64-msvcrt-ruby300  -lshell32 -lws2_32 -liphlpapi -limagehlp -lshlwapi  "
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <winsock2.h>
+4: #include <windows.h>
+5: int main(int argc, char **argv)
+6: {
+7:   return !!argv[argc];
+8: }
+/* end */
+
+"gcc -E -IC:/Ruby30-x64/include/ruby-3.0.0/x64-mingw32 -IC:/Ruby30-x64/include/ruby-3.0.0/ruby/backward -IC:/Ruby30-x64/include/ruby-3.0.0 -I. -D__USE_MINGW_ANSI_STDIO=1 -DFD_SETSIZE=2048 -D_WIN32_WINNT=0x0600 -D__MINGW_USE_VC2005_COMPAT -D_FILE_OFFSET_BITS=64  -O3 -fno-fast-math -fstack-protector-strong  conftest.c -o conftest.i"
+conftest.c:5:10: fatal error: libpq-fe.h: No such file or directory
+    5 | #include <libpq-fe.h>
+      |          ^~~~~~~~~~~~
+compilation terminated.
+checked program was:
+/* begin */
+1: #include "ruby.h"
+2: 
+3: #include <winsock2.h>
+4: #include <windows.h>
+5: #include <libpq-fe.h>
+/* end */
+
+--------------------
+

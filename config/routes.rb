@@ -10,6 +10,8 @@ Rails.application.routes.draw do
   get 'POS/orders', to: 'orders#index'
   get 'person', to: 'person#index'
 
+  get 'POS/inventory_paginated/:id', to: 'inventory#paginated'
+
   #will now display the menu and only the specific user's orders and completed orders
   get 'person/:id', to: 'person#show'
   get 'POS/sales', to: 'inventory#sales'

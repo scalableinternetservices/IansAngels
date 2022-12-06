@@ -1,0 +1,21 @@
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/websocket-driver-0.7.5/ext/websocket-driver
+/home/erwan/.rbenv/versions/3.0.4/bin/ruby -I /home/erwan/.rbenv/versions/3.0.4/lib/ruby/3.0.0 -r ./siteconf20221205-3568-9432kd.rb extconf.rb
+Ignoring bootsnap-1.13.0 because its extensions are not built. Try: gem pristine bootsnap --version 1.13.0
+Ignoring debug-1.6.2 because its extensions are not built. Try: gem pristine debug --version 1.6.2
+Ignoring msgpack-1.6.0 because its extensions are not built. Try: gem pristine msgpack --version 1.6.0
+Ignoring websocket-driver-0.7.5 because its extensions are not built. Try: gem pristine websocket-driver --version 0.7.5
+creating Makefile
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/websocket-driver-0.7.5/ext/websocket-driver
+make DESTDIR\= clean
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/websocket-driver-0.7.5/ext/websocket-driver
+make DESTDIR\=
+compiling websocket_mask.c
+linking shared-object websocket_mask.so
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/websocket-driver-0.7.5/ext/websocket-driver
+make DESTDIR\= install
+make: Warning: File 'websocket_mask.so' has modification time 0.037 s in the future
+/usr/bin/install -c -m 0755 websocket_mask.so ./.gem.20221205-3568-s1a812
+make: warning:  Clock skew detected.  Your build may be incomplete.

@@ -1,0 +1,17 @@
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/debug-1.6.2/ext/debug
+/home/erwan/.rbenv/versions/3.0.4/bin/ruby -I /home/erwan/.rbenv/versions/3.0.4/lib/ruby/3.0.0 -r ./siteconf20221205-3568-9ww50a.rb extconf.rb
+Ignoring debug-1.6.2 because its extensions are not built. Try: gem pristine debug --version 1.6.2
+creating Makefile
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/debug-1.6.2/ext/debug
+make DESTDIR\= clean
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/debug-1.6.2/ext/debug
+make DESTDIR\=
+compiling debug.c
+compiling iseq_collector.c
+linking shared-object debug/debug.so
+
+current directory: /mnt/c/Users/erwan/Desktop/IansAngels/vendor/cache/ruby/3.0.0/gems/debug-1.6.2/ext/debug
+make DESTDIR\= install
+/usr/bin/install -c -m 0755 debug.so ./.gem.20221205-3568-faqsmc/debug
